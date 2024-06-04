@@ -23,7 +23,12 @@ def get_all_monthly_facility_data(year_month, from_to_facility,facility_connecti
 
 	all_facility_data = collections.OrderedDict() #Getting data from the csv referenced to facilityID
 
-	Battery_FFV_folder = map_to_drive() + "/Project Data/AER/facility_volumetrics/"
+	# Kareem Edits
+	# old code
+	# Battery_FFV_folder = map_to_drive() + "/Project Data/AER/facility_volumetrics/"
+	# new code
+	Battery_FFV_folder = 'Project Data/AER/facility_volumetrics/'
+
 	Battery_FFV_File = "Vol_" + year_month + ".csv"
 
 	Battery_FFV = Battery_FFV_folder + Battery_FFV_File + "/" + Battery_FFV_File
@@ -32,7 +37,8 @@ def get_all_monthly_facility_data(year_month, from_to_facility,facility_connecti
 
 	data_start_count = 100 # make this a high number to begin with
 
-	with open(Battery_FFV) as f:
+	# Kareem edits: ("r", encoding='windows-1252')
+	with open(Battery_FFV, "r", encoding='windows-1252') as f:
 		reader = csv.reader(f)
 		for row in reader:
 			if len(row) > 0:
@@ -476,9 +482,14 @@ def geoscout_facility_data(selected_facility_data):
 
 	geoscout_facility_data = collections.OrderedDict() #Getting data from the csv referenced to facilityID
 	
-	facility_data_file_location = map_to_drive() + "/Project Data/geoSCOUT_data/AB_all_facilities.csv"
+	# Kareem Edits
+	# old code
+	# facility_data_file_location = map_to_drive() + "/Project Data/geoSCOUT_data/AB_all_facilities.csv"
+	# new code
+	facility_data_file_location = 'Project Data/geoSCOUT_data/AB_all_facilities.csv'
 	
-	with open(facility_data_file_location) as f:
+	# Kareem Edits: added (encoding='windows-1252')
+	with open(facility_data_file_location, 'r', encoding='windows-1252') as f:
 		reader = csv.reader(f)
 		for row in reader:
 			if row[0] == 'Unique Facility ID':

@@ -30,13 +30,21 @@ def search_production_data(well_data):
 	switch = 0
 	wells_list = []
 	#file_location = map_to_drive() + "Project Data/geoSCOUT_data/Canadian_LNG_production.csv"
-	file_location = map_to_drive() + "Project Data/geoSCOUT_data/post 2005 production.csv"
+
+	# Kareem Edits
+	# old code
+	# file_location = map_to_drive() + "Project Data/geoSCOUT_data/post 2005 production.csv"
+
+	#new code
+	file_location = 'Project Data/geoSCOUT_data/post 2005 production.csv'
+	#end
+
 	remove_characters = ['/', '-', ' ']
 
-	with open(file_location) as f:
+	# Kareem Edits
+	with open(file_location, "r", encoding='windows-1252') as f:
 		reader = csv.reader(f)
 		#row_count = sum(1 for row in reader)
-		
 		#bar = progressbar.ProgressBar(maxval=row_count).start()
 
 		for row in reader:

@@ -51,6 +51,7 @@ def well_search():
 
 	count = 0;
 	wells_list = []
+
 	#file_location = map_to_drive() + "Project Data/geoSCOUT_data/Canadian_LNG_well_data.csv"
 	#The main one
 
@@ -60,6 +61,7 @@ def well_search():
 
 	#new code
 	file_location = "Project Data/geoSCOUT_data/post 2005 well_data.csv"
+	#end
 
 	with open(file_location, "r", encoding='windows-1252') as f:
 		# Kareem edit

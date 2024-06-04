@@ -17,7 +17,11 @@ from .map_to_drive import map_to_drive #path to Project Data folder
 
 def get_AB_water_source_data():
 	
-	AB_HF_WaterSourceData = map_to_drive() +"/Project Data/AER/HF_WaterSourceData.csv"
+	# Kareem Edits:
+	# old code
+	# AB_HF_WaterSourceData = map_to_drive() +"/Project Data/AER/HF_WaterSourceData.csv"
+	# new code
+	AB_HF_WaterSourceData = 'Project Data/AER/HF_WaterSourceData.csv'
 
 	timer = time.time()
 	print('\n\n========Importing Alberta Water Source Data========')
@@ -29,7 +33,8 @@ def get_AB_water_source_data():
 	remove_characters = ['/', '-', ' ']
 	data_start_count = 100
 
-	with open(AB_HF_WaterSourceData) as f:
+	# Kareem Edits: added ("r", encoding='windows-1252')
+	with open(AB_HF_WaterSourceData, "r", encoding='windows-1252') as f:
 		reader = csv.reader(f)
 		for row in reader:
 			if row[0] == 'Submitter Licencee BA ID':
@@ -62,7 +67,11 @@ def get_AB_water_source_data():
 
 def get_AB_water_use_data():
 
-	AB_HF_WaterUseData = map_to_drive() +"/Project Data/AER/HF_WaterUseData.csv"
+	# Kareem Edits:
+	# old code
+	# AB_HF_WaterUseData = map_to_drive() +"/Project Data/AER/HF_WaterUseData.csv"
+	# new code
+	AB_HF_WaterUseData = 'Project Data/AER/HF_WaterUseData.csv'
 
 	timer = time.time()
 	print('\n\nImporting Alberta Water Use Data')
@@ -73,7 +82,8 @@ def get_AB_water_use_data():
 	switch = 0
 	water_use_data = collections.OrderedDict()
 
-	with open(AB_HF_WaterUseData) as f:
+	# Kareem Edits: added ("r", encoding='windows-1252')
+	with open(AB_HF_WaterUseData, "r", encoding='windows-1252') as f:
 		reader = csv.reader(f)
 
 		for row in reader:

@@ -14,7 +14,12 @@ from .map_to_drive import map_to_drive #path to Project Data folder
 def get_BC_water_data():
 
 	count = 0;
-	BC_hydraulic_fracture = map_to_drive() + "/Project Data/BCOGC/hydraulic_fracture/hydraulic_fracture.csv"
+	# Kareem Edits:
+	# old edits
+	# BC_hydraulic_fracture = map_to_drive() + "/Project Data/BCOGC/hydraulic_fracture/hydraulic_fracture.csv"
+	# new code
+	BC_hydraulic_fracture = 'Project Data/BCOGC/hydraulic_fracture/hydraulic_fracture.csv'
+
 	water_data_headings = []
 
 	timer = time.time()
@@ -24,8 +29,8 @@ def get_BC_water_data():
 
 	water_data = collections.OrderedDict() #Getting data from the csv referenced to well
 
-
-	with open(BC_hydraulic_fracture) as f:
+	# Kareem edits: added ("r", encoding='windows-1252')
+	with open(BC_hydraulic_fracture, "r", encoding='windows-1252') as f:
 		reader = csv.reader(f)
 		for row in reader:
 			if row[0] == 'WA NUM':

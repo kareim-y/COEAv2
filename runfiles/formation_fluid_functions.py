@@ -32,18 +32,23 @@ def get_fluid_data(fluid_type,well_data,):
 
 	#get appropriate file for 
 	if fluid_type.upper() == 'GAS':
-		file_location = map_to_drive() + "/Project Data/geoSCOUT_data/post 2005 gas_analysis.csv"
+		# Kareem Edits
+		# file_location = map_to_drive() + "/Project Data/geoSCOUT_data/post 2005 gas_analysis.csv"
+		file_location = 'Project Data/geoSCOUT_data/post 2005 gas_analysis.csv'
 	#if fluid_type.upper() == 'WATER':
 	#	file = formation + '_' + fluid_type + '_analysis.csv' 
 	if fluid_type.upper() == 'OIL':
-		file_location = map_to_drive() + "/Project Data/geoSCOUT_data/post 2005 oil_analysis.csv"
+		# Kareem Edits
+		# file_location = map_to_drive() + "/Project Data/geoSCOUT_data/post 2005 oil_analysis.csv"
+		file_location = 'Project Data/geoSCOUT_data/post 2005 oil_analysis.csv'
 
 	count = 0;
 	fluid_data = collections.OrderedDict() #Getting data from the csv referenced to well
 	remove_characters = ['/', '-', ' ']
 	data_start_count = 100
 
-	with open(file_location) as f:
+	# Kareem Edits: added ("r", encoding='windows-1252')
+	with open(file_location, "r", encoding='windows-1252') as f:
 		reader = csv.reader(f)
 		for row in reader:
 			if count == 0:

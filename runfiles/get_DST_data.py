@@ -14,7 +14,11 @@ from .map_to_drive import map_to_drive #path to Project Data folder
 def get_DST_data():
 
 	count = 0;
-	DST_csv = map_to_drive() +"/Project Data/geoSCOUT_data/post 2005 DST data.csv"
+	# Kareem Edits
+	# old code
+	# DST_csv = map_to_drive() +"/Project Data/geoSCOUT_data/post 2005 DST data.csv"
+	# new code
+	DST_csv = 'Project Data/geoSCOUT_data/post 2005 DST data.csv'
 
 	timer = time.time()
 
@@ -26,7 +30,8 @@ def get_DST_data():
 
 	count = 0
 
-	with open(DST_csv) as f:
+	# Kareem Edits: added ('r', encoding='windows-1252')
+	with open(DST_csv, 'r', encoding='windows-1252') as f:
 		reader = csv.reader(f)
 		for row in reader:
 			

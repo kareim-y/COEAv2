@@ -1,0 +1,57 @@
+## Test Inputs:
+
+Enter a Drilled After Date (DD/MM/YYYY): **01/05/2016**
+
+Enter a Drilled Before Date (DD/MM/YYYY): **01/09/2016**
+
+Enter provinces of Interest (separate by , ). AB,BC and SK available; **AB**
+
+Enter formations of Interest (separate by , ). Type "Search" for a complete list of formations; Search
+
+Enter formations of Interest (separate by , ). Type "Search" for a complete list of formations; **Cambrian,Kcard_ss,Dduvernay,Delk_pt,Dleduc**
+
+Horizontal Well? (True, False or Both): **Both**
+
+Enter a Minimum First 12 month Ave GOR (m3/m3): **100**
+
+Enter a Maximum First 12 month Ave GOR (m3/m3): **1000**
+
+Enter the Start Date (YYYY-MM): **2016-01**
+
+Enter the End Date (YYYY-MM): **2016-09**
+
+## Code Changes & Observations
+
+- well_search, line 58
+- well_search, line 64
+- well_search, line 100
+- well_search, line 141
+
+- search_production_data, line 58
+- search_production_data, line 44, added ("r", encoding='windows-1252')
+
+- get_well_data_from_WA, line 34, what is i??
+- induced_seismicity, line 19 and 31, where is the get_well_data, and the Spatial_impact_plotting files?
+- environmental_reports, line 148, where is the get_well_data files?
+- What is plot_basemap
+
+- get_injection_data, line 33 and 40
+
+- formation_fluid_functions lines 35, 41, and 50
+
+- get_DST_data, lines 17 and 33
+
+- get_AB_water_data, line 20, 36, 70, 85
+
+- get_BC_water_data, line 17, and 32
+
+- AB_facility_analysis, line 26, 40, 485, and 491
+
+- python_to_OPGEE, line 25, and 104
+
+## Suggestions
+
+- Finds files you commented out
+- Making code more robust, for easier debugging and
+  - Add checks to only allow proceeding if data entered is correct
+  - Better Documentation
