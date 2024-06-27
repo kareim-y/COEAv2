@@ -13,6 +13,9 @@ import time
 from .get_all_post_2005_well_data import get_tight_oil_wells
 from .map_to_drive import map_to_drive #path to Project Data folder
 
+from model_inputs import ModelInputs
+import pickle
+
 def get_all_monthly_facility_data(year_month, from_to_facility,facility_connection_dates):
 
 	print(('\nImporting All Facility Data for :' + str(year_month)))
@@ -293,7 +296,7 @@ def AB_facility_data_summary(facility_data_headings, selected_facility_data, fac
 	return facility_summary
 
 
-def single_facility_OPGEE(facility_summary, OPGEE_data, facility_to_well, geoscout_fac_data, geoscout_fac_data_headings,facility_connection_dates):
+def single_facility_OPGEE(facility_summary, OPGEE_data, facility_to_well, geoscout_fac_data, geoscout_fac_data_headings, facility_connection_dates):
 
 	print('\nCollecting OPGEE FFV inputs for wells\n')
 
@@ -489,7 +492,7 @@ def geoscout_facility_data(selected_facility_data):
 	facility_data_file_location = 'Project Data/geoSCOUT_data/AB_all_facilities.csv'
 	
 	# Kareem Edits: added (encoding='windows-1252')
-	with open(facility_data_file_location, 'r', encoding='windows-1252') as f:
+	with open(facility_data_file_location, 'r', encoding='utf-8') as f:
 		reader = csv.reader(f)
 		for row in reader:
 			if row[0] == 'Unique Facility ID':
@@ -632,13 +635,17 @@ def facility_summary_print(facility_summary, facility, connected_wells, facility
 
 def AB_facility_analysis(well_data, well_data_headings, OPGEE_data, dates_array):
 	
+	with open('model_input_instance.pkl', 'rb') as f:
+		inputs_instance = pickle.load(f)
+	
 	print('\n')
 	
 	if len(well_data) != 0:
-		ask_include_GP = str(input('Would you like to include Gas Processing Plants? (Y/N) :    '))
+		ask_include_GP = str(inputs_instance.facility_gas_prod)
+		print('Chosen Response for \'Would you like to include Gas Processing Plants?\' is:', inputs_instance.facility_gas_prod)
 		print('\n')
 	else:
-		ask_include_GP = 'N'
+		ask_include_GP = False
 
 	facility_summary = collections.OrderedDict()
 	single_facility_summary = collections.OrderedDict()
@@ -657,7 +664,7 @@ def AB_facility_analysis(well_data, well_data_headings, OPGEE_data, dates_array)
 		formation_facility_list, facility_to_well, connected_wells = AB_formation_facility_list(from_to_facility, well_data, facility_to_well, connected_wells, all_facility_data, facility_data_headings)
 
 		#add conected facilities 
-		if ask_include_GP[0].upper() == 'Y':
+		if ask_include_GP == True:
 			formation_facility_list = gas_plant_from_facility(formation_facility_list, from_to_facility, facility_data_headings, all_facility_data)
 
 		#Dictionary containing data for facilities in the formation
@@ -677,9 +684,11 @@ def AB_facility_analysis(well_data, well_data_headings, OPGEE_data, dates_array)
 	facility_summary_print(facility_summary, 'ALL', connected_wells, facility_to_well, geoscout_fac_data, geoscout_fac_data_headings)
 
 	#single faclity print out 
-	ask_single_fac_print = str(input('\nWould you like a print out of each facility? (Y/N):   '))
+	ask_single_fac_print = str(inputs_instance.facility_print_AB)
+	print('Chosen Response for \'Would you like a print out of each AB facility?\' is:', inputs_instance.facility_print_AB)
+	print('\n')
 
-	if ask_single_fac_print[0].upper() == 'Y':
+	if ask_single_fac_print == True:
 
 		for facility in facility_summary:
 			print(('\nFacility ' + str(list(facility_summary.keys()).index(facility)) + ' of ' + str(len(facility_summary))))

@@ -1,0 +1,46 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+First Year Production Trend Analysis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1) PRD Monthly GAS e3m3
+2) PRD Monthly OIL m3
+3) PRD Monthly WTR m3
+4) PRD Monthly CND m3
+5) PRD Monthly BOE Bbl
+6) PRD Monthly FLD m3
+7) PRD Monthly HRS hrs
+8) PRD Cumulative GAS e3m3
+9) PRD Cumulative OIL m3
+10) PRD Cumulative WTR m3
+11) PRD Cumulative CND m3
+12) PRD Cumulative BOE Bbl
+13) PRD Cumulative FLD m3
+14) PRD Cumulative HRS hrs
+15) PRD Calndr-Day Avg GAS e3m3
+16) PRD Calndr-Day Avg OIL m3
+17) PRD Calndr-Day Avg WTR m3
+18) PRD Calndr-Day Avg CND m3
+19) PRD Calndr-Day Avg BOE Bbl
+20) PRD Calndr-Day Avg FLD m3
+21) PRD Prdcg-Day Avg GAS e3m3
+22) PRD Prdcg-Day Avg OIL m3
+23) PRD Prdcg-Day Avg WTR m3
+24) PRD Prdcg-Day Avg CND m3
+25) PRD Prdcg-Day Avg BOE Bbl
+26) PRD Prdcg-Day Avg FLD m3
+27) PRD Potential GAS e3m3
+28) PRD Potential OIL m3
+29) PRD Potential WTR m3
+30) PRD Potential CND m3
+31) PRD Potential BOE Bbl
+32) PRD Potential FLD m3
+33) PRD Ratio: WTR/OIL m3/m3
+34) PRD Ratio: WTR/GAS m3/e6m3
+35) PRD Ratio: GAS/OIL m3/m3
+36) PRD Percent: WTR Cut %
+37) PRD Percent: OIL Cut %
+38) PRD $OIL: Edmonton Par $Cdnm3
+39) PRD $OIL: Heavy Hardisty $Cdnm3
+40) PRD $OIL: Refinery Acquisition $Cdnm3
+41) PRD $GAS: AB Border $Cdne3m3
+42) PRD $GAS: AB Reference $Cdne3m3

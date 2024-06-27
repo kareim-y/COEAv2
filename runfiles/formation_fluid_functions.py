@@ -10,6 +10,9 @@ import datetime
 import re
 import time
 
+from model_inputs import ModelInputs
+import pickle
+
 from .return_statistics import histogram, return_statistics, boxplot
 from .map_to_drive import map_to_drive #path to Project Data folder
 
@@ -226,6 +229,10 @@ def OPGEE_well_oil_data(well_data, oil_header_data, oil_data, OPGEE_data):
 
 def oil_analysis_summary(oil_header_data, oil_data, OPGEE_data):
 
+	# Kareem Edit
+	with open('model_input_instance.pkl', 'rb') as f:
+		inputs_instance = pickle.load(f)
+
 	index_array = []
 
 	for i in range(0,len(oil_header_data)):
@@ -263,8 +270,12 @@ def oil_analysis_summary(oil_header_data, oil_data, OPGEE_data):
 	return_statistics(well_apis, 'OIL API GRAVITY')
 	print('\n')
 	
-	ask_boxplot = str(input('\n\nWould you like an API boxplot (Y/N)?:   '))
-	if ask_boxplot.upper() == 'Y':
+	# Kareem Edits
+	# ask_boxplot = str(input('\n\nWould you like an API boxplot (Y/N)?:   '))
+	ask_boxplot = inputs_instance.fluid_boxplot
+	print("Chosen input for \'Would you like an API boxplot (Y/N)?\' is", ask_boxplot)
+
+	if ask_boxplot == True:
 		boxplot(well_apis, 'OIL API GRAVITY')
 
 	#------------------OPGEE DATA-------------------

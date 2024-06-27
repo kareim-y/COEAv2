@@ -1,4 +1,6 @@
 #python_to_OPGEE
+from model_inputs import ModelInputs
+import pickle
 
 def colnum_string(n):
     #covnverts number n to the column string - ie C = 3, AB = 28
@@ -10,6 +12,9 @@ def colnum_string(n):
 
 def python_to_OPGEE(OPGEE_data):
 
+	with open('model_input_instance.pkl', 'rb') as f:
+		inputs_instance = pickle.load(f)
+
 	import openpyxl
 	from string import ascii_uppercase
 	import re
@@ -17,7 +22,9 @@ def python_to_OPGEE(OPGEE_data):
 
 	#import_file_name = "OPGEE_v2.0_Original.xlsm"
 	#import_file_name = ""OPGEE_3.0a_BETA.xlsm""
-	import_export_files = ["OPGEE_v2.0_tight_oil_edit.xlsm"]
+
+	# import_export_files = ["OPGEE_v2.0_tight_oil_edit.xlsm"]
+	import_export_files = ["OPGEE_3.0c_BETA.xlsm"]
 	#,"OPGEE_3.0a_BETA_edit.xlsm"
 
 	for file in import_export_files:
@@ -40,8 +47,12 @@ def python_to_OPGEE(OPGEE_data):
 		print(' ------------------- Exclude Exported Wells ------------------- \n')
 		print('Exclude wells to reduce/remove calculation issues in OPGEE')
 		print('Oil production must be greater than 0 bbl/day for OPGEE to run\n')
-		min_age = float(input('Minimum well producing time (years);   '))
-		min_oil_prod = float(input('Minimum oil production (bbl/day);   '))
+
+		# Kareem Edits
+		min_age = float(inputs_instance.min_welltime)
+		print('Chosen Response for \'Minimum well producing time (years)\' is:', inputs_instance.min_welltime)
+		min_oil_prod = float(inputs_instance.min_wellprod)
+		print('Chosen Response for \'Minimum oil production (bbl/day)\' is:', inputs_instance.min_wellprod)
 		print('\n')
 
 		wb=openpyxl.load_workbook(filename = path, read_only=False, keep_vba=True)

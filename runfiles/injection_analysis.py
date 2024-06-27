@@ -8,15 +8,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 
+from model_inputs import ModelInputs
+import pickle
+
 
 def injection_dates():
+
+	# Kareem Edit
+	# Import Model Inputs from .pkl file
+	with open('model_input_instance.pkl', 'rb') as f:
+		inputs_instance = pickle.load(f)
 
 	print('\nSelect the dates for which you would like to assess injection')
 	print('The available data set contains monthly injection data for wells between Jan-2005 and Dec-2019')
 	print('For OPGEE field assessment, adjust start date to be first drill year\n')
-	start_date = str(input('Enter the Start Date (YYYY-MM): '))
-	end_date = str(input('Enter the End Date (YYYY-MM): '))
-	print('\n')
+
+	# Kareem Edit
+	# start_date = str(input('Enter the Start Date (YYYY-MM): '))
+	# end_date = str(input('Enter the End Date (YYYY-MM): '))
+	start_date = str(inputs_instance.inject_startdate)
+	end_date = str(inputs_instance.inject_enddate)
+
+	print(f'Chosen Injection start date: {start_date}\nChosen Injection end date: {end_date}')
 
 	date_array = dates_array(start_date, end_date)
 
@@ -110,6 +123,11 @@ def injection_summary(injection_data_headings, injection_data, well_data, well_d
 
 def injection_plotter(injection_data, injection_data_headings, injection_dict, date_array):
 
+	# Kareem Edit
+	# Import Model Inputs from .pkl file
+	with open('model_input_instance.pkl', 'rb') as f:
+		inputs_instance = pickle.load(f)
+
 	start_date = date_array[0] 
 	end_date =  date_array[-1]
 
@@ -118,7 +136,10 @@ def injection_plotter(injection_data, injection_data_headings, injection_dict, d
 	for i in range(1,len(injection_data_headings)):
 		print((str(i) + ') ' + injection_data_headings[i]))
 
-	plot_option = plot_option = int(eval(input('\nWhat would you like to plot? Choose from above options or type 0 to exit:     ')))
+	# Kareem Edits
+	# plot_option = plot_option = int(eval(input('\nWhat would you like to plot? Choose from above options or type 0 to exit:     ')))
+	plot_option = int(inputs_instance.inject_graph)
+	print("Chosen Option for plotting is: ", plot_option)
 
 	while plot_option != 0:
 
@@ -150,7 +171,9 @@ def injection_plotter(injection_data, injection_data_headings, injection_dict, d
 		plt.xticks(dates[::xtick_frequency], dates[::xtick_frequency], rotation = 90)
 		plt.show()
 
-		plot_option = int(eval(input('\nWhat would you like to plot? Choose from above options or type 0 to exit:     ')))
+		# Kareem Edits: changed code below to exit loop
+		# plot_option = int(eval(input('\nWhat would you like to plot? Choose from above options or type 0 to exit:     ')))
+		plot_option = 0
 
 	#Summary Statistics across period
 

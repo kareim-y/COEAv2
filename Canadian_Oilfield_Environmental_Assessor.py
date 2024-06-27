@@ -42,6 +42,13 @@ from runfiles.get_injection_data import get_injection_data
 from runfiles.injection_analysis import injection_analysis, injection_dates
 from runfiles.get_all_post_2005_well_data import get_tight_oil_wells, get_all_post_2005_well_data
 
+from model_inputs import ModelInputs
+import pickle
+
+# Import Model Inputs from .pkl file
+with open('model_input_instance.pkl', 'rb') as f:
+	inputs_instance = pickle.load(f)
+
 #text welcoming to module etc
 introduction()
 
@@ -56,7 +63,7 @@ print('\n\nData is Loading Please Wait...\n\n')
 
 #this is the set of wells that data will be collectd for in the remainder of the functions
 #well_data is stored in a dictionary {'Well UWI' : [well data]} - to know what is stored in the well_data file, print well_data_headings 
-well_data_headings, well_data, field_name = well_search() 
+well_data_headings, well_data, field_name = well_search()
 #well_data_headings, well_data = get_all_post_2005_well_data()
 #well_data_headings, well_data, field_name = get_tight_oil_wells()
 print('\n\n====================  Data available For Wells  ====================\n')
@@ -78,10 +85,15 @@ OPGEE_data = OPGEE_well_data(well_data, well_data_headings, OPGEE_data)
 
 #-------Post 2005 Production Data--------#
 
-ask_production = str(input('Get Production Data (Y/N) ?:   '))
+# Kareem Edits
+# ask_production = str(input('Get Production Data (Y/N) ?:   '))
+ask_production = inputs_instance.prod_data_checkbox
+print('Chosen Response to \'Get Production Data (True/False)\': ', inputs_instance.prod_data_checkbox)
 print('\n')
 
-if ask_production.upper() == 'Y':
+# Kareem Edits:
+# if ask_production.upper() == 'Y':
+if ask_production == True:	
 
 	#Get production Data For the Wells of Interest 
 	production_data_headings, production_data, production_well_data, production_well_data_headings = search_production_data(well_data)
@@ -99,9 +111,12 @@ if ask_production.upper() == 'Y':
 #------------- Post 2005 Injection Data -------------------
 
 #get injection data - there is no connection to OPGEE yet
-ask_injection = str(input('Get Injection Data (Y/N) ?:   '))
-print('\n')
-if ask_injection[0] == 'Y':
+# ask_injection = str(input('Get Injection Data (Y/N) ?:   '))
+ask_injection = inputs_instance.inject_data_checkbox
+print('Chosen Response to \'Get Injection Data (True/False)\': ', inputs_instance.inject_data_checkbox)
+
+# if ask_injection[0] == 'Y':
+if ask_injection == True:
 
 	date_array = injection_dates()
 
@@ -113,10 +128,12 @@ if ask_injection[0] == 'Y':
 
 #Get formaion fluid data
 
-ask_fluid_data = str(input('Get Fluid Data (Y/N) ?:   '))
-print('\n')
+# ask_fluid_data = str(input('Get Fluid Data (Y/N) ?:   '))
+ask_fluid_data = inputs_instance.fluid_data_checkbox
+print('Chosen Response to \'Get Fluid Data (True/False)\': ', inputs_instance.fluid_data_checkbox)
 
-if ask_fluid_data.upper() == 'Y':
+# if ask_fluid_data.upper() == 'Y':
+if ask_fluid_data == True:
 
 	print('Importing Gas, Water Oil Analysis Data')
 
@@ -151,9 +168,12 @@ if ask_fluid_data.upper() == 'Y':
 
 #---------------------DST Pressure Data =--------------
 
-ask_DST_data = str(input('Get Pressure/DST data (Y/N)?:  '))
-print('\n')
-if ask_DST_data[0].upper() == 'Y':
+# ask_DST_data = str(input('Get Pressure/DST data (Y/N)?:  '))
+ask_DST_data = inputs_instance.pressure_DST_data_checkbox
+print('Chosen Response to \'Get Pressure/DST Data (True/False)\': ', inputs_instance.pressure_DST_data_checkbox)
+
+# if ask_DST_data[0].upper() == 'Y':
+if ask_DST_data == True:
 
 	DST_data, DST_headings = get_DST_data()
 
@@ -162,11 +182,13 @@ if ask_DST_data[0].upper() == 'Y':
 
 #---------------------AB water data---------------------------
 
-ask_water_data = str(input('Get HF Water Data (Y/N) ?:   '))
-print('\n')
+# ask_water_data = str(input('Get HF Water Data (Y/N) ?:   '))
+ask_water_data = inputs_instance.HF_water_checkbox
+print('Chosen Response to \'Get HF Water Data (True/False)\': ', inputs_instance.HF_water_checkbox)
 
 
-if ask_water_data.upper() == 'Y':
+# if ask_water_data.upper() == 'Y':
+if ask_water_data == True:	
 	#--------------------------AB water Analysis---------------------------------------
 
 	AB_water_source_analysis(well_data_headings, well_data)
@@ -180,18 +202,23 @@ if ask_water_data.upper() == 'Y':
 	#-------------------------Year-Month----------------------
 
 print('\n')
-ask_facility_data = str(input('Get Facility Data (Y/N) ?:   '))
-print('\n')
+# ask_facility_data = str(input('Get Facility Data (Y/N) ?:   '))
+ask_facility_data = inputs_instance.facility_data_checkbox
+print('Chosen Response to \'Get Facility Data (True/False)\': ', inputs_instance.facility_data_checkbox)
 
-if ask_facility_data.upper() == 'Y':
+# if ask_facility_data.upper() == 'Y':
+if ask_facility_data == True:
 
 	#get data for facilities connected to facilities
 
 	print('\n===========================\n Facility Data Selection\n==========================\n')
 	print('Monthly Facility Data is Available from 2014-01 to 2019-12')
 	print('Enter The Date Range For Assessment (5-10 seconds per month)')
-	start_date = str(input('Start Date (YYYY-MM):   '))
-	end_date = str(input('End Date (YYYY-MM):   '))
+
+	start_date = str(inputs_instance.facility_startdate)
+	print('Chosen Response for \'Start Date (YYYY-MM)\' is:', inputs_instance.facility_startdate)
+	end_date = str(inputs_instance.facility_enddate)
+	print('Chosen Response for \'End Date (YYYY-MM)\' is:', inputs_instance.facility_enddate)
 	print('\n')
 
 	dates_array = dates_array(start_date,end_date) #dates_array(start,end)
@@ -242,14 +269,21 @@ for i in range(0,len(OPGEE_data['headings'])):
 print('\n\n')
 print(('Project total Computational time (seconds): ' + str(time.time() - start_time)))
 
-ask_OPGEE_sensitivity = str(input('\nWould you like to see distributions of the OPGEE input Parameters? (Y/N):   '))
+# ask_OPGEE_sensitivity = str(input('\nWould you like to see distributions of the OPGEE input Parameters? (Y/N):   '))
+ask_OPGEE_sensitivity = inputs_instance.OPGEE_distribution_checkbox
+print('Chosen Response to \'Would you like to see distributions of the OPGEE input Parameters? (True/False)\': ', inputs_instance.OPGEE_distribution_checkbox)
 
-if ask_OPGEE_sensitivity[0].upper() == 'Y':
+# if ask_OPGEE_sensitivity[0].upper() == 'Y':
+if ask_OPGEE_sensitivity == True:
+
 		OPGEE_input_sensitivity(OPGEE_data, well_data)
 
-ask_OPGEE_export = str(input('\nExport to OPGEE (Y/N)?   '))
+# ask_OPGEE_export = str(input('\nExport to OPGEE (Y/N)?   '))
+ask_OPGEE_export = inputs_instance.OPGEE_export_checkbox
+print('Chosen Response to \'Export to OPGEE (True/False)\': ', inputs_instance.OPGEE_export_checkbox)
 
-if ask_OPGEE_export.upper() == 'Y':
+# if ask_OPGEE_export.upper() == 'Y':
+if ask_OPGEE_export == True:	
 
 	python_to_OPGEE(OPGEE_data)
 

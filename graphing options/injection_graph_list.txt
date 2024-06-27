@@ -1,0 +1,57 @@
+~~~~~~~~~~~~~~~~~~~~~~ 
+INJECTION ANALYSIS  
+~~~~~~~~~~~~~~~~~~~~~~ 
+PLOT OPTIONS
+
+1) INJ Monthly Crude Oil m3
+2) INJ Monthly Gas e3m3
+3) INJ Monthly Oil m3
+4) INJ Monthly Gas-Water m3
+5) INJ Monthly Undesignated m3
+6) INJ Monthly Water m3
+7) INJ Monthly Brine m3
+8) INJ Monthly Waste m3
+9) INJ Monthly Solvent e3m3
+10) INJ Monthly Steam m3
+11) INJ Monthly Air e3m3
+12) INJ Monthly Synthetic Crude m3
+13) INJ Monthly Carbon Dioxide e3m3
+14) INJ Monthly Polymer m3
+15) INJ Monthly Nitrogen e3m3
+16) INJ Monthly LPG m3
+17) INJ Monthly Crude Bitumen m3
+18) INJ Monthly Condensate m3
+19) INJ Monthly Oxygen e3m3
+20) INJ Monthly Acid Gas e3m3
+21) INJ Monthly Anhydrous Ammonia m3
+22) INJ Monthly Crude Oil/Bitumen m3
+23) INJ Monthly Naphtha m3
+24) INJ Monthly Propane m3
+25) INJ Monthly Butanes m3
+26) INJ Monthly Ethane m3
+27) INJ Monthly Ethane Plus m3
+28) INJ Monthly Pentanes Plus m3
+29) INJ Monthly Diesel Oil m3
+30) INJ Monthly Alkaline Water m3
+31) INJ Monthly Miscellar m3
+32) INJ Monthly Skim Oil m3
+33) INJ Monthly Skim Emulsion m3
+34) INJ Monthly Ammonium Nitrate m3
+35) INJ Monthly Source Water m3
+36) INJ Monthly Sand m3
+37) INJ Monthly Miscellaneous m3
+38) INJ Cum Water m3
+39) INJ Cum Gas e3m3
+40) INJ Cum Carbon Dioxide e3m3
+41) INJ Cum Solvent e3m3
+42) INJ Cum Steam m3
+43) INJ Cum Air e3m3
+44) INJ Inj-Day Avg Water m3
+45) INJ Inj-Day Avg Water Source m3
+46) INJ Inj-Day Avg Gas e3m3
+47) INJ Inj-Day Avg Carbon Dioxide e3m3
+48) INJ Inj-Day Avg Solvent e3m3
+49) INJ Inj-Day Avg Steam m3
+50) INJ Inj-Day Avg Air e3m3
+51) INJ Pressure kPa
+52) INJ Monthly Hours hrs

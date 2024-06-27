@@ -5,7 +5,15 @@ from datetime import datetime
 import pandas
 from scipy import stats
 
+from model_inputs import ModelInputs
+import pickle
+
 def DST_analysis(well_data, well_data_headings, DST_data, DST_headings, OPGEE_data):
+
+	# Kareem Edits
+	# Import Model Inputs from .pkl file
+	with open('model_input_instance.pkl', 'rb') as f:
+		inputs_instance = pickle.load(f)
 
 	print('\n\n======================\n Analysis of DST Data\n======================')
 
@@ -157,15 +165,17 @@ def DST_analysis(well_data, well_data_headings, DST_data, DST_headings, OPGEE_da
 		pressure_gradient = np.mean(gradient_array)
 		print(('Average Pressure Gradient (psi/ft)', pressure_gradient))
 
-		#plot of pressure vs depth
-		plt.xlabel('TVD (ft)')
-		plt.ylabel('Max Pressure (psi)')
-		plt.ylim(0,np.max(press_array))
-		plt.xlim(0,np.max(depth_array))
-		proj_name =  OPGEE_data['assessed field'][OPGEE_data['headings'].index('Field name')]
-		plt.title(proj_name + ' - Max Pressure (psi)' + '  ' + '(count ' + str(len(wells_with_DST)) + ')')
-		plt.show()
-		plt.clf()
+		# Kareem edits
+		if inputs_instance.pressure_plot == True:
+			#plot of pressure vs depth
+			plt.xlabel('TVD (ft)')
+			plt.ylabel('Max Pressure (psi)')
+			plt.ylim(0,np.max(press_array))
+			plt.xlim(0,np.max(depth_array))
+			proj_name =  OPGEE_data['assessed field'][OPGEE_data['headings'].index('Field name')]
+			plt.title(proj_name + ' - Max Pressure (psi)' + '  ' + '(count ' + str(len(wells_with_DST)) + ')')
+			plt.show()
+			plt.clf()
 
 		count = 0 
 
@@ -190,7 +200,10 @@ def DST_analysis(well_data, well_data_headings, DST_data, DST_headings, OPGEE_da
 		print('\n~~~Collecting OPGEE pressure inputs~~~')
 		print('\nThe most recent DST data is used (if over 100 psi)\n')
 
-		ask_pressure_value = str(input('Would you like to use the calculated pressure gradient (' + str(round(pressure_gradient,3)) + 'psi/ft) ? \nIf no the default pressure gradient is assumed (0.45 psi/ft)\n\nYes/No?   '))
+		# Kareem edits
+		# ask_pressure_value = str(input('Would you like to use the calculated pressure gradient (' + str(round(pressure_gradient,3)) + 'psi/ft) ? \nIf no the default pressure gradient is assumed (0.45 psi/ft)\n\nYes/No?   '))
+		ask_pressure_value = str(inputs_instance.pressure_gradient)
+		print("Chosen option for using the calculated pressure gradient is", ask_pressure_value)
 
 		#-----------OPGEE well data--------
 		for well in well_data:

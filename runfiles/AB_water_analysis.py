@@ -14,7 +14,15 @@ from .return_statistics import return_statistics, histogram
 from .get_AB_water_data import get_AB_water_use_data, get_AB_water_source_data
 from .get_all_post_2005_well_data import get_tight_oil_wells
 
+from model_inputs import ModelInputs
+import pickle
+
 def AB_water_source_analysis(well_data_headings, well_data):
+
+	# Kareem edits
+	# Import Model Inputs from .pkl file
+	with open('model_input_instance.pkl', 'rb') as f:
+		inputs_instance = pickle.load(f)
 
 	m_ft = 3.28084
 
@@ -153,13 +161,15 @@ def AB_water_source_analysis(well_data_headings, well_data):
 		print((water_types[i] + ' (m3);  '+ str(total_water_volume[i])))
 	print(('Total Volume (m3); ' + str(sum(total_water_volume))))
 
-	x = np.arange(len(water_types));
-	fig, ax = plt.subplots()
-	plt.bar(x, total_water_volume)
-	plt.xticks(x, water_types, fontsize=5, rotation=85) #
-	plt.ylabel('Water Volume (m3)', fontsize=12)
-	plt.title('Total water usage in Alberta (' + str(well_count) + ' wells)' ,fontsize=12)
-	plt.tight_layout()
+	# Kareem edits
+	if inputs_instance.water_plot == True:
+		x = np.arange(len(water_types));
+		fig, ax = plt.subplots()
+		plt.bar(x, total_water_volume)
+		plt.xticks(x, water_types, fontsize=5, rotation=85) #
+		plt.ylabel('Water Volume (m3)', fontsize=12)
+		plt.title('Total water usage in Alberta (' + str(well_count) + ' wells)' ,fontsize=12)
+		plt.tight_layout()
 
 
 	#---------------------------Data analysis of water use in alberta wells------------------------

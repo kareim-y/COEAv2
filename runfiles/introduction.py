@@ -20,8 +20,7 @@ def introduction():
 	#print('Reported Environmental Incidents (AB,BC,SK)')
 
 	#print('\nModules Coming Soon....')
-	input('Press Enter to Continue and Select Wells.......\n')
-
+	# input('Press Enter to Continue and Select Wells.......\n')
 
 	return
 

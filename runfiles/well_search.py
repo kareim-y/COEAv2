@@ -16,9 +16,10 @@ import re
 import webbrowser
 import subprocess
 from .map_to_drive import map_to_drive #path to Project Data folder
-
 import chardet
 
+from model_inputs import ModelInputs
+import pickle
 
 def introduction():
 
@@ -40,8 +41,15 @@ def well_search():
 	
 	introduction()
 
-	project_name = str(input('Firstly, what would you like to name the Project?   '))
-	print('\n')
+	# Import model inputs from .pkl file
+	with open('model_input_instance.pkl', 'rb') as f:
+		inputs_instance = pickle.load(f)
+
+	# Kareem Edits:
+	# project_name = str(input('Firstly, what would you like to name the Project?   '))
+	# print('\n')
+	project_name = str(inputs_instance.project_name)
+	print("Chosen project name is :", project_name)
 
 	start_time = time.time()
 
@@ -81,13 +89,19 @@ def well_search():
 	#start with three selection criteria
 
 	#Get date limits
-	date_min = str(input('Enter a Drilled After Date (DD/MM/YYYY): '))
+	# date_min = str(input('Enter a Drilled After Date (DD/MM/YYYY): '))
+	date_min = str(inputs_instance.drilled_after)
+	print("Chosen Drilled After Date is:", date_min)
 	date_min = datetime.strptime(date_min, '%d/%m/%Y')
-	date_max = str(input('Enter a Drilled Before Date (DD/MM/YYYY): '))
+
+	# date_max = str(input('Enter a Drilled Before Date (DD/MM/YYYY): '))
+	date_max = str(inputs_instance.drilled_before)
+	print("Chosen Drilled Before Date is:", date_max)
 	date_max = datetime.strptime(date_max, '%d/%m/%Y')
 
 	#get province of interest
-	provinces =  str(input('Enter provinces of Interest (separate by , ). AB,BC and SK available;  '))
+	# provinces = str(input('Enter provinces of Interest (separate by , ). AB,BC and SK available;  '))
+	provinces = inputs_instance.provinces
 	provinces = re.sub(' ', '', provinces)
 	provinces = provinces.split(',')
 	#Get formations of Interest
@@ -97,7 +111,9 @@ def well_search():
 	#formations
 	formations = 'SEARCH'
 	while formations.upper() == 'SEARCH':
-		formations = str(input('Enter formations of Interest (separate by , ). Type "Search" for a complete list of formations;  '))
+		# formations = str(input('Enter formations of Interest (separate by , ). Type "Search" for a complete list of formations;  '))
+		formations = str(inputs_instance.formations)
+		print("Chosen formations are:", formations)
 		if formations.upper() == 'SEARCH':
 			# Kareem Edits
 			# webbrowser.open("runfiles/list_of_producing_formations.txt")
@@ -112,7 +128,9 @@ def well_search():
 
 	#Horizontal Well? Condition for tight oil
 	
-	horizontal_TF = str(input('Horizontal Well? (True, False or Both): '))
+	# horizontal_TF = str(input('Horizontal Well? (True, False or Both): '))
+	horizontal_TF = str(inputs_instance.horizontal)
+	print("Chosen Option for \'Horizontal Well?\':", horizontal_TF)
 	horizontal_TF = horizontal_TF[0].upper()
 	if horizontal_TF == 'B':
 		horizontal_TF = ['T','F']
@@ -121,8 +139,13 @@ def well_search():
 
 	#GOR Conditions
 
-	min_GOR= float(input('Enter a Minimum First 12 month Ave GOR (m3/m3):  '))
-	max_GOR= float(input('Enter a Maximum First 12 month Ave GOR (m3/m3):  '))
+	# min_GOR= float(input('Enter a Minimum First 12 month Ave GOR (m3/m3):  '))
+	min_GOR = float(inputs_instance.min_gor)
+	print("Chosen Minimum First 12 month Ave GOR (m3/m3)", min_GOR)
+
+	# max_GOR= float(input('Enter a Maximum First 12 month Ave GOR (m3/m3):  '))
+	max_GOR = float(inputs_instance.max_gor)
+	print("Chosen Maximum First 12 month Ave GOR (m3/m3)", max_GOR)
 
 	if len(str(max_GOR)) == 0:
 		max_GOR = 100000000000

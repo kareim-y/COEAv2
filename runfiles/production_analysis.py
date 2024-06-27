@@ -7,15 +7,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 
+from model_inputs import ModelInputs
+import pickle
 
 def production_dates():
+
+	# Kareem Edit
+	with open('model_input_instance.pkl', 'rb') as f:
+		inputs_instance = pickle.load(f)
 
 	print('\nSelect the dates for which you would like to assess production')
 	print('The available data set contains monthly production data for wells between Jan-2005 and Dec-2019')
 	print('For OPGEE field assessment, adjust start date to be first drill year\n')
-	start_date = str(input('Enter the Start Date (YYYY-MM): '))
-	end_date = str(input('Enter the End Date (YYYY-MM): '))
-	print('\n')
+
+	# Kareem Edits
+	# start_date = str(input('Enter the Start Date (YYYY-MM): '))
+	# end_date = str(input('Enter the End Date (YYYY-MM): '))
+	start_date = str(inputs_instance.prod_startdate)
+	end_date = str(inputs_instance.prod_enddate)
+
+	print(f'\nChosen Production start date: {start_date}\nChosen Production end date: {end_date}')
 
 	date_array = dates_array(start_date, end_date)
 
@@ -135,6 +146,10 @@ def production_summary(production_data_headings, production_data, well_data, wel
 
 def production_plotter(production_data, production_data_headings, production_dict, date_array):
 
+	# Kareem edits
+	with open('model_input_instance.pkl', 'rb') as f:
+		inputs_instance = pickle.load(f)
+
 	start_date = date_array[0] 
 	end_date =  date_array[-1]
 
@@ -143,7 +158,10 @@ def production_plotter(production_data, production_data_headings, production_dic
 	for i in range(1,len(production_data_headings)):
 		print((str(i) + ') ' + production_data_headings[i]))
 
-	plot_option = plot_option = int(eval(input('\nWhat would you like to plot? Choose from above options or type 0 to exit:     ')))
+	# Kareem edits
+	# plot_option = plot_option = int(eval(input('\nWhat would you like to plot? Choose from above options or type 0 to exit:     ')))
+	plot_option = int(inputs_instance.prod_graph2)
+	print("\nChosen Option for plotting is: ", plot_option)
 
 	while plot_option != 0:
 
@@ -176,7 +194,9 @@ def production_plotter(production_data, production_data_headings, production_dic
 		plt.xticks(dates[::xtick_frequency], dates[::xtick_frequency], rotation = 90)
 		plt.show()
 
-		plot_option = int(eval(input('\nWhat would you like to plot? Choose from above options or type 0 to exit:     ')))
+		# Kareem edits
+		# plot_option = int(eval(input('\nWhat would you like to plot? Choose from above options or type 0 to exit:     ')))
+		plot_option = 0
 
 	#Summary Statistics across period
 
@@ -244,6 +264,10 @@ def OPGEE_production_data(OPGEE_data, production_data, production_dict, date_arr
 
 
 def well_production_analysis(production_data, production_data_headings, well_data, well_data_headings):
+
+	# Kareem Edit
+	with open('model_input_instance.pkl', 'rb') as f:
+		inputs_instance = pickle.load(f)
 
 	print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nFirst Year Production Trend Analysis')
 	print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
@@ -323,7 +347,10 @@ def well_production_analysis(production_data, production_data_headings, well_dat
 	for i in range(1,len(production_data_headings)):
 		print((str(i) + ') ' + production_data_headings[i]))
 
-	plot_option = plot_option = int(eval(input('\nWhat would you like to plot? Choose from above options or type 0 to exit:     ')))
+	# Kareem edits
+	# plot_option = plot_option = int(eval(input('\nWhat would you like to plot? Choose from above options or type 0 to exit:     ')))
+	plot_option = int(inputs_instance.prod_graph)
+	print("\nChosen Option for plotting is: ", plot_option)
 
 	while plot_option != 0:
 		for catagory in yearly_prod_data:
@@ -355,8 +382,9 @@ def well_production_analysis(production_data, production_data_headings, well_dat
 		plt.title('First ' + str(months_assessed) + ' Month Average From Wells: ' + production_data_headings[plot_option])
 		plt.show()
 
-		
-		plot_option = int(eval(input('\nWhat would you like to plot? Choose from above options or type 0 to exit:     ')))
+		# Kareem edit
+		# plot_option = int(eval(input('\nWhat would you like to plot? Choose from above options or type 0 to exit:     ')))
+		plot_option = 0
 
 	return
 

@@ -14,18 +14,23 @@ from .OPGEE_input_sensitivity import OPGEE_input_sensitivity
 import datetime
 from .map_to_drive import map_to_drive #path to Project Data folder
 
+from model_inputs import ModelInputs
+import pickle
 
 def get_BC_facility_links():
 
 	print('\nGetting BC Facility to Well Connections')
-	facility_links_location = map_to_drive() + "/Project Data/BCOGC/BC_facility_linkage.csv"
+
+	# Kareem Edits
+	# facility_links_location = map_to_drive() + "/Project Data/BCOGC/BC_facility_linkage.csv"
+	facility_links_location = "Project Data/BCOGC/BC_facility_linkage.csv"
 	BC_facility_links = collections.OrderedDict()
 	
 
 	#A switch for when we want to start storing csv data
 	switch = 0
-
-	with open(facility_links_location) as f:
+	# Kareem edits: ("r", encoding='windows-1252')
+	with open(facility_links_location,"r", encoding='windows-1252') as f:
 		reader = csv.reader(f)
 		for row in reader:
 
@@ -168,11 +173,14 @@ def get_BC_facility_data(date_array, BC_facility_list):
 
 		print(('Getting BC facility Data for ' + str(year)))
 
-		BC_facility_data_path = map_to_drive() + "/Project Data/BCOGC/facility_volumetrics/" + year + ".csv"
+		# Kareem Edits
+		# BC_facility_data_path = map_to_drive() + "/Project Data/BCOGC/facility_volumetrics/" + year + ".csv"
+		BC_facility_data_path = "Project Data/BCOGC/facility_volumetrics/" + year + ".csv"
 
 		switch = 0
 
-		with open(BC_facility_data_path) as f:
+		# Kareem edits: ("r", encoding='windows-1252')
+		with open(BC_facility_data_path, "r", encoding='windows-1252') as f:
 			
 			reader = csv.reader(f)
 			
@@ -395,14 +403,17 @@ def get_BC_facility_index():
 	print('Getting BC Facility Information (e.g Type etc)')
 
 	#function acessesthe facindex file and gets facility data - eg type
-
-	facility_index_location = map_to_drive() + "/Project Data/BCOGC/facindex.csv"
+		
+	# Kareem Edits
+	# facility_index_location = map_to_drive() + "/Project Data/BCOGC/facindex.csv"
+	facility_index_location = "Project Data/BCOGC/facindex.csv"
 	BC_facility_index = collections.OrderedDict()
 
 	#A switch for when we want to start storing csv data
 	switch = 0
 
-	with open(facility_index_location) as f:
+	# Kareem edits: ("r", encoding='windows-1252')
+	with open(facility_index_location, "r", encoding='windows-1252') as f:
 		reader = csv.reader(f)
 		for row in reader:
 
@@ -667,6 +678,9 @@ def BC_facility_well_prod_comparison(production_data, production_data_headings, 
 
 def BC_facility_analysis(well_data, well_data_headings, OPGEE_data, date_array):
 
+	with open('model_input_instance.pkl', 'rb') as f:
+		inputs_instance = pickle.load(f)
+
 	print('\n=============================')
 	print(' BC FACILITY ANALYSIS')
 	print('=============================\n')
@@ -689,7 +703,9 @@ def BC_facility_analysis(well_data, well_data_headings, OPGEE_data, date_array):
 
 		OPGEE_data = facility_OPGEE_data(well_data, well_data_headings, OPGEE_data, BC_facility_data, facility_to_WA, WA_to_UWI, BC_facility_index, BC_facility_index_headings)
 
-	ask_print_single_fac = str(input('\nWould you like to print each single facility (Y/N)? :    '))
+	ask_print_single_fac = str(inputs_instance.facility_print_BC)
+	print('Chosen Response for \'Would you like to print each single BC facility?\' is:', inputs_instance.facility_print_BC)
+	print('\n')
 
 	count = 1
 
