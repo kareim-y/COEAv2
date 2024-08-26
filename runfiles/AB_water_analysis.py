@@ -227,13 +227,11 @@ def AB_water_source_analysis(well_data_headings, well_data):
 	for key in sorted(year_water_volume.keys()):
 		print((str(key) + '; ' + str(year_water_volume[key])))
 
-
 	plt.show()
 	
 	return
 
 def AB_water_use_analysis(AB_water_use_headings, AB_water_use_data, well_data_headings, well_data):
-
 	#indexings
 	stage_index = AB_water_use_headings.index('Number of Stages')
 	BH_lat_index = AB_water_use_headings.index('Bottom Hole Latitude')

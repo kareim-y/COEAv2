@@ -94,10 +94,38 @@ def python_to_OPGEE(OPGEE_data):
 				else:
 					excluded_wells.append(entry)
 
-				
-				
+		# Specify the rows and starting column
+		row_87 = 87
+		row_86 = 86
+		row_46 = 46
+		start_column = 'H'
 
+		# Initialize column index
+		column_index = openpyxl.utils.column_index_from_string(start_column)
+		# Loop through the cells in row 87 and perform the equation
+		while True:
+			cell_87 = inputs_sheet.cell(row=row_87, column=column_index)
+			if cell_87.value is None:  # Stop when you reach a blank cell
+				break
 
+			cell_46 = inputs_sheet.cell(row=row_46, column=column_index)
+			cell_86 = inputs_sheet.cell(row=row_86, column=column_index)
+
+			# Perform the calculation
+			original_value = cell_87.value
+			if cell_46.value == 0 :
+				new_value = 0
+			else:
+				new_value = original_value / (cell_46.value - cell_86.value)
+
+			# Store the original value in the row below
+			inputs_sheet.cell(row=row_87 + 2, column=column_index, value=original_value)
+
+			# Replace the value in row 87 with the new value
+			cell_87.value = new_value
+
+			# Move to the next column
+			column_index += 1
 
 		#we use the project name we specify at the start
 

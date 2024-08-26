@@ -5,6 +5,7 @@ import subprocess
 from PIL import Image, ImageTk
 from model_inputs import ModelInputs
 import pickle
+import os
 
 
 def validate_date(date_text, format):
@@ -164,7 +165,26 @@ def submit_data():
     with open('model_input_instance.pkl', 'wb') as f:
         pickle.dump(inputs_instance, f)
 
+    # Assuming the text file is one directory up from the script's location
+    file_path = os.path.join(os.path.dirname(__file__), '..', 'project_name.txt')
+    with open(file_path, 'r+') as file:
+        # Read the current contents
+        content = file.read()
+        print("Original content:")
+        print(content, "\n")
+    
+        # Write new content
+        file.seek(0)
+        file.write(project_name)
+        file.truncate()
+
     subprocess.run(["python", "Canadian_Oilfield_Environmental_Assessor.py"])
+    messagebox.showinfo("Status Update", "COEA Run Complete")
+
+    script_dir = os.path.dirname(os.path.dirname(__file__))  # Go up one directory level
+    script_path = os.path.join(script_dir, 'COEAtoOPGEE.py')
+    subprocess.run(['python', script_path])
+    messagebox.showinfo("Status Update", "COEA Data Prepared for OPGEEv4 Run")
     
 
 app = tk.Tk()
@@ -198,7 +218,8 @@ photo = ImageTk.PhotoImage(resized_image)
 image_label = tk.Label(scrollable_frame, image=photo)
 image_label.grid(row=0, column=0, columnspan=3)
 
-tk.Label(scrollable_frame, text="==========================================================\n\
+tk.Label(scrollable_frame, text="\nContrubutors: Dr. Joule Bergerson, Alex Bradley, Julia Yuan, Kareem Youssef\
+\n==========================================================\n\
 Welcome to the Canadian Oilfield Environmental Assessor (COEA)\n\
 ==========================================================\n\
 Data is available for wells drilled over the period Jan 2005 to Dec 2019\n\
