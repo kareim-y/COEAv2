@@ -1,5 +1,6 @@
 class ModelInputs:
     def __init__(self, project_name, drilled_after, drilled_before, provinces, formations, horizontal, min_gor, max_gor, **kwargs):
+        # Initialize the ModelInputs class with core attributes
         self.project_name = project_name
         self.drilled_after = drilled_after
         self.drilled_before = drilled_before
@@ -11,7 +12,7 @@ class ModelInputs:
 
         # Dynamically assign additional keyword arguments to the instance
         for key, value in kwargs.items():
-            setattr(self, key, value)
+            setattr(self, key, value) # Set additional attributes as needed from kwargs
 
         # self.prod_data_checkbox = prod_data_checkbox
         # self.inject_data_checkbox = inject_data_checkbox
@@ -23,6 +24,7 @@ class ModelInputs:
         # self.OPGEE_export_checkbox = OPGEE_export_checkbox
 
     def __str__(self):
+        # Generate a string representation of the core attributes of the instance
         base_info = (f"Project Name: {self.project_name}\n"
                 f"Drilled After Date: {self.drilled_after}\n"
                 f"Drilled Before Date: {self.drilled_before}\n"
@@ -40,12 +42,13 @@ class ModelInputs:
                 # f"OPGEE Distribution Parameters: {self.OPGEE_distribution_checkbox}\n"
                 # f"Export to OPGEE: {self.OPGEE_export_checkbox}"
         )
+        # Append any additional dynamically set attributes to the string
         additional_info = ""
         for key, value in vars(self).items():
             if key not in ["project_name", "drilled_after", "drilled_before", "provinces", "formations", "horizontal", "min_gor", "max_gor"]:
                 additional_info += f"{key.replace('_', ' ').title()}: {value}\n"
 
-        return base_info + additional_info       
+        return base_info + additional_info # Return the combined string representation of the instance       
 
 # # Module-level variable to store the instance
 # inputs_instance = None

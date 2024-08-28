@@ -9,6 +9,16 @@ import os
 
 
 def validate_date(date_text, format):
+    """
+    Ensures that dates are entered in the correct format
+
+    Parameters:
+        date_text (string): string containing the date inputed by the user.
+        format (string): The date format that is pre-defined.
+
+    Returns:
+        Boolean: True or False
+    """
     try:
         datetime.strptime(date_text, format)
         return True
@@ -16,14 +26,41 @@ def validate_date(date_text, format):
         return False
 
 def validate_provinces(provinces):
+    """
+    Ensures that the provinces entered by the user is one of, or a combination of, Alberta, British Colombia or Saskatchewan
+
+    Parameters:
+        provinces (string): string containing the user's selection of provinces.
+
+    Returns:
+        Boloean: Returns True if the data is correct otherwise returns false.
+    """
     valid_provinces = {'AB', 'BC', 'SK'}
     input_provinces = set(provinces.split(','))
     return input_provinces.issubset(valid_provinces)
 
 def validate_horizontal(horizontal):
+    """
+    Ensures that the horizontal well selection by user is True, False or Both.
+
+    Parameters:
+        horizontal (string): string containing the user input.
+
+    Returns:
+        Boloean: Returns True if the data is correct otherwise returns false.
+    """
     return horizontal in {'True', 'False', 'Both'}
 
 def validate_gor(gor_text):
+    """
+    Ensures that the GOR input by user is >= to 0.
+
+    Parameters:
+        gor_text (string): string containing the user input for GOR.
+
+    Returns:
+        Boloean: Returns True if the data is correct otherwise returns false.
+    """
     try:
         value = float(gor_text)
         return value >= 0
@@ -31,6 +68,15 @@ def validate_gor(gor_text):
         return False
 
 def validate_date_ym(date_text):
+    """
+    Ensures that dates are entered in the correct format (yyyy-mm)
+
+    Parameters:
+        date_text (string): string containing the date inputed by the user.
+
+    Returns:
+        Boolean: True or False
+    """
     try:
         datetime.strptime(date_text, '%Y-%m')
         return True
@@ -38,12 +84,46 @@ def validate_date_ym(date_text):
         return False
     
 def open_formations_list():
+    """
+    Used to display list of formations available for plotting
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     subprocess.run(["open", "runfiles/list_of_producing_formations.txt"]) 
 
 def open_graph_list(list_directory):
+    """
+    Used to display list of graphs available for plotting
+
+    Parameters:
+        list_directory (string): contains the directory storing the graph list.
+
+    Returns:
+        None
+    """
     subprocess.run(["open", list_directory]) 
 
 def toggle_state(checkbox_var, *items):
+    """
+    Toggle the state of given Tkinter widgets based on the value of a checkbox variable.
+
+    This function checks the value of a Tkinter `IntVar` associated with a checkbox. 
+    If the checkbox is selected (i.e., `checkbox_var.get()` is True), the function enables the 
+    specified Tkinter widgets. Otherwise, it disables them.
+
+    Parameters:
+        checkbox_var (tk.IntVar): The Tkinter variable associated with the checkbox, determining 
+                                  whether the widgets should be enabled or disabled.
+        *items (tk.Widget): A variable number of Tkinter widget instances that will be toggled 
+                            between enabled and disabled states. (This allows for flexibility with
+                            the number of checkboxes that can be created without having to edit the function)
+    Returns:
+        None
+    """
     state = tk.NORMAL if checkbox_var.get() else tk.DISABLED
     for item in items:
         item.config(state=state)
@@ -95,9 +175,10 @@ def submit_data():
     min_welltime = min_welltime_entry.get()
     min_wellprod = min_wellprod_entry.get()
 
+    # Run validation functions to ensure user inputs are valid
     if not validate_date(drilled_after, '%d/%m/%Y'):
-        messagebox.showerror("Input Error", "Drilled After Date is not in the correct format (DD/MM/YYYY).")
-        return
+        messagebox.showerror("Input Error", "Drilled After Date is not in the correct format (DD/MM/YYYY).") # display error message if input is invalid
+        return # exit function if input is invalid
     if not validate_date(drilled_before, '%d/%m/%Y'):
         messagebox.showerror("Input Error", "Drilled Before Date is not in the correct format (DD/MM/YYYY).")
         return
@@ -120,7 +201,7 @@ def submit_data():
     #     messagebox.showerror("Input Error", "End Date is not in the correct format (YYYY-MM).")
     #     return
 
-    # Create an instance of ModelInputs and store the data
+    # Create an instance of ModelInputs and store the data (refer to comments in model_inputs.py)
     inputs_instance = ModelInputs(
         project_name, drilled_after, drilled_before, provinces, formations, horizontal,
         min_gor, max_gor, 
@@ -165,7 +246,7 @@ def submit_data():
     with open('model_input_instance.pkl', 'wb') as f:
         pickle.dump(inputs_instance, f)
 
-    # Assuming the text file is one directory up from the script's location
+    # # Stores the name of the project in a text file, to be used later in preparing COEA data for OPGEE Python, assumes the text file is one directory up from the script's location
     file_path = os.path.join(os.path.dirname(__file__), '..', 'project_name.txt')
     with open(file_path, 'r+') as file:
         # Read the current contents
@@ -178,47 +259,53 @@ def submit_data():
         file.write(project_name)
         file.truncate()
 
+    # Run COEA main file
     subprocess.run(["python", "Canadian_Oilfield_Environmental_Assessor.py"])
-    messagebox.showinfo("Status Update", "COEA Run Complete")
+    messagebox.showinfo("Status Update", "COEA Run Complete") # Displays a pop-up when COEA is run successfully
 
     script_dir = os.path.dirname(os.path.dirname(__file__))  # Go up one directory level
-    script_path = os.path.join(script_dir, 'COEAtoOPGEE.py')
+    script_path = os.path.join(script_dir, 'COEAtoOPGEE.py') # Get relative directory for COEAtoOPGEE.py (script used to prepare COEA data for OPGEE python)
     subprocess.run(['python', script_path])
-    messagebox.showinfo("Status Update", "COEA Data Prepared for OPGEEv4 Run")
+    messagebox.showinfo("Status Update", "COEA Data Prepared for OPGEEv4 Run") # Dsiplays a pop-up when COEAtoOPGEE.py is ran successfully
     
-
+# Initialize the main application window
 app = tk.Tk()
 app.title("Canadian Oilfield Environmental Assessment Model")
 
-# Creates a canvas and a scrollbar
+# Creates a canvas and a scrollbar for a scrollable frame
 canvas = tk.Canvas(app)
-scrollbar = tk.Scrollbar(app, orient="vertical", command=canvas.yview)
-scrollable_frame = tk.Frame(canvas)
+scrollbar = tk.Scrollbar(app, orient="vertical", command=canvas.yview) # Vertical scrollbar linked to canvas
+scrollable_frame = tk.Frame(canvas) # Frame to contain all scrollable content
 
-# Configure the scrollbar
+# Configure the scrollable frame to resize based on the canvas dimensions
 scrollable_frame.bind(
     "<Configure>",
     lambda e: canvas.configure(
-        scrollregion=canvas.bbox("all")
+        scrollregion=canvas.bbox("all") # Update the scroll region based on the frame's size
     )
 )
 
+# Create a window inside the canvas for the scrollable frame
 canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-canvas.configure(yscrollcommand=scrollbar.set)
+canvas.configure(yscrollcommand=scrollbar.set) # Set scrollbar to canvas
 
+# Pack scrollbar and canvas into the main window
 scrollbar.pack(side="right", fill="y")
 canvas.pack(side="left", fill="both", expand=True)
 
-# Load the image
-image_path = "schulich-engineering.png" 
+# Load and resize the image to fit the GUI
+image_path = "images/schulich-engineering.png" 
 original_image = Image.open(image_path)
-resized_image = original_image.resize((383, 150), Image.LANCZOS) # Resize image
-photo = ImageTk.PhotoImage(resized_image)
+resized_image = original_image.resize((383, 150), Image.LANCZOS) # Resize image to specified dimensions (383,150)
+photo = ImageTk.PhotoImage(resized_image) # Convert the resized image to a Tkinter PhotoImage object
 
+# Display the image at the top of the scrollable frame
 image_label = tk.Label(scrollable_frame, image=photo)
-image_label.grid(row=0, column=0, columnspan=3)
+image_label.grid(row=0, column=0, columnspan=3) # Spanning across 3 columns
 
-tk.Label(scrollable_frame, text="\nContrubutors: Dr. Joule Bergerson, Alex Bradley, Julia Yuan, Kareem Youssef\
+# Add the introductory text and contributors' information
+tk.Label(scrollable_frame, text="\nCoded By: Alex Bradley, Kareem Youssef\
+\nContributors: Dr. Joule Bergerson, Julia Yuan\
 \n==========================================================\n\
 Welcome to the Canadian Oilfield Environmental Assessor (COEA)\n\
 ==========================================================\n\
@@ -234,7 +321,7 @@ Data is available for wells drilled over the period Jan 2005 to Dec 2019\n\
 9 - Facility Volumetric Data (AB,BC,SK)\n\
 10 - Induced Seismicity (AB,BC)\n", font='Helvetica 16 bold').grid(row=1, column = 0, columnspan=3)
 
-# Input Descriptions
+# Create labels for input descriptions
 tk.Label(scrollable_frame, text= "________________________________________________________________________________________________________________________________").grid(row=2, columnspan=3, sticky='w')
 tk.Label(scrollable_frame, text="Enter Project Name", font='Helvetica 14 bold', justify='left').grid(row=3, sticky='w')
 tk.Label(scrollable_frame, text="Enter a Drilled After Date (DD/MM/YYYY):", font='Helvetica 14 bold', justify='left').grid(row=4, sticky='w')
@@ -252,6 +339,7 @@ tk.Label(scrollable_frame, text= "______________________________________________
 tk.Label(scrollable_frame, text= "________________________________________________________________________________________________________________________________").grid(row=33, columnspan=3, sticky='w')
 tk.Label(scrollable_frame, text= "________________________________________________________________________________________________________________________________").grid(row=41, columnspan=3, sticky='w')
 
+# Create labels for production graph analysis options
 prod_graph_label = tk.Label(scrollable_frame, text="Choose graphs To display from the \"First Year Production Trend Analysis\"\nTo view available graphs click \"Graphs Available\" button to the right", state=tk.DISABLED, justify='left')
 prod_graph_label.grid(row=13, sticky='w')
 prod_assess_label = tk.Label(scrollable_frame, text="The available data set contains monthly production data for wells between Jan-2005 and Dec-2019\nFor OPGEE field assessment, adjust start date to be first drill year", state=tk.DISABLED, justify='left')
@@ -263,6 +351,7 @@ prod_enddate_label.grid(row=16, sticky='w')
 prod_graph_label2 = tk.Label(scrollable_frame, text="Choose Graphs To Display from production analysis\nTo view available graphs click \"Graphs Available\" button to the right", state=tk.DISABLED, justify='left')
 prod_graph_label2.grid(row=17, sticky='w')
 
+# Create labels for injection data analysis options
 inject_graph_label = tk.Label(scrollable_frame, text="Choose Graphs To Display from injection analysis\nTo View available graphs click \"Graphs Available\" button to the right", state=tk.DISABLED, justify='left')
 inject_graph_label.grid(row=20, sticky='w')
 inject_startdate_label = tk.Label(scrollable_frame, text="Enter the Start Date (YYYY-MM)", state=tk.DISABLED, justify='left')
@@ -270,6 +359,7 @@ inject_startdate_label.grid(row=21, sticky='w')
 inject_enddate_label = tk.Label(scrollable_frame, text="Enter the End Date (YYYY-MM)", state=tk.DISABLED, justify='left')
 inject_enddate_label.grid(row=22, sticky='w')
 
+# Create labels for facility data analysis options
 facility_info_label = tk.Label(scrollable_frame, text="Monthly Facility Data is Available from 2014-01 to 2019-12\nEnter The Date Range For Assessment (5-10 seconds per month)", state=tk.DISABLED, justify='left')
 facility_info_label.grid(row=35, sticky='w')
 facility_startdate_label = tk.Label(scrollable_frame, text="Enter the Start Date (YYYY-MM)", state=tk.DISABLED, justify='left')
@@ -277,6 +367,7 @@ facility_startdate_label.grid(row=36, sticky='w')
 facility_enddate_label = tk.Label(scrollable_frame, text="Enter the End Date (YYYY-MM)", state=tk.DISABLED, justify='left')
 facility_enddate_label.grid(row=37, sticky='w')
 
+# Create labels for OPGEE export options
 opgee_export_label = tk.Label(scrollable_frame, text="NOTE: Exclude wells to reduce/remove calculation issues in OPGEE\nOil production must be greater than 0 bbl/day for OPGEE to run", state=tk.DISABLED, justify='left')
 opgee_export_label.grid(row=44, sticky='w')
 min_welltime_label = tk.Label(scrollable_frame, text="Minimum well producing time (years)", state=tk.DISABLED, justify='left')
@@ -287,7 +378,7 @@ min_wellprod_label.grid(row=46, sticky='w')
 # tk.Label(app, text="Enter the Start Date (YYYY-MM):").grid(row=8)
 # tk.Label(app, text="Enter the End Date (YYYY-MM):").grid(row=9)
 
-# Checkboxes
+# Create checkbox variables for data selection and analysis options
 prod_data_checkbox_entry = tk.BooleanVar()
 inject_data_checkbox_entry = tk.BooleanVar()
 
@@ -309,20 +400,24 @@ facility_print_BC_entry = tk.BooleanVar()
 OPGEE_dsitribution_entry = tk.BooleanVar()
 OPGEE_export_entry = tk.BooleanVar()
 
+# Production Data checkbox
 tk.Checkbutton(scrollable_frame, text="Production Data", font='Helvetica 14 bold', variable = prod_data_checkbox_entry,
             command=lambda: toggle_state(prod_data_checkbox_entry, prod_graph_label, prod_graph_label2, prod_assess_label, prod_graph_entry, 
                             prod_graph_entry2, prod_graph_button, prod_graph_button2, prod_startdate_label,  
                             prod_enddate_label, prod_startdate_entry, prod_enddate_entry)).grid(row=12, column=0, sticky='W')
 
+# Injection Data checkbox
 tk.Checkbutton(scrollable_frame, text="Injection Data", font='Helvetica 14 bold', variable = inject_data_checkbox_entry, 
             command=lambda: toggle_state(inject_data_checkbox_entry, inject_graph_label, inject_startdate_label, inject_enddate_label,
                                         inject_graph_button, inject_graph_entry, inject_startdate_entry, inject_enddate_entry)).grid(row=19, column=0, sticky='W')
 
+# Fluid Data checkbox
 tk.Checkbutton(scrollable_frame, text="Fluid Data", font='Helvetica 14 bold', variable = fluid_data_checkbox_entry, 
             command=lambda: toggle_state(fluid_data_checkbox_entry, fluid_boxplot_checkbox)).grid(row=24, column=0, sticky='W')
 fluid_boxplot_checkbox = tk.Checkbutton(scrollable_frame, text="Plot API BoxPlot", variable = fluid_boxplot_entry, state=tk.DISABLED)
 fluid_boxplot_checkbox.grid(row=25, column=0, sticky='W')
 
+# Pressure/DST Data checkbox
 tk.Checkbutton(scrollable_frame, text="Pressure/DST Data", font='Helvetica 14 bold', variable = pressure_DST_data_checkbox_entry,
             command=lambda: toggle_state(pressure_DST_data_checkbox_entry, pressure_plot_checkbox, pressure_gradient_checkbox)).grid(row=27, column=0, sticky='W')
 pressure_plot_checkbox = tk.Checkbutton(scrollable_frame, text="Plot \"Max Pressure (psi)\"", variable = pressure_plot_entry, state=tk.DISABLED)
@@ -331,11 +426,13 @@ pressure_gradient_checkbox = tk.Checkbutton(scrollable_frame, text="Would you li
                                         variable = pressure_gradient_entry, justify='left', state=tk.DISABLED)
 pressure_gradient_checkbox.grid(row=29, column=0, sticky='W', columnspan=2)
 
+# HF Water Data checkbox
 tk.Checkbutton(scrollable_frame, text="HF Water Data", font='Helvetica 14 bold', variable = HF_water_checkbox_entry,
             command=lambda: toggle_state(HF_water_checkbox_entry, water_plot_checkbox)).grid(row=31, column=0, sticky='W')
 water_plot_checkbox = tk.Checkbutton(scrollable_frame, text="Plot Total Water Usage", variable = water_plot_entry, state=tk.DISABLED)
 water_plot_checkbox.grid(row=32, column=0, sticky='W')
 
+# Facility Data checkbox
 tk.Checkbutton(scrollable_frame, text="Facility Data", font='Helvetica 14 bold', variable = facility_data_checkbox_entry,
             command=lambda: toggle_state(facility_data_checkbox_entry, facility_info_label, facility_startdate_label, facility_enddate_label, 
                                         facility_startdate_entry, facility_enddate_entry, facility_gas_prod_checkbox, facility_print_AB_checkbox, facility_print_BC_checkbox,)).grid(row=34, column=0, sticky='W')
@@ -346,44 +443,52 @@ facility_print_AB_checkbox.grid(row=39, column=0, sticky='W')
 facility_print_BC_checkbox = tk.Checkbutton(scrollable_frame, text="Would you like to print each single BC facility", variable = facility_print_BC_entry, state=tk.DISABLED)
 facility_print_BC_checkbox.grid(row=40, column=0, sticky='W')
 
+# OPGEE Distribution Parameters checkbox
 tk.Checkbutton(scrollable_frame, text="Plot OPGEE Distribution Parameters", font='Helvetica 14 bold', variable = OPGEE_dsitribution_entry,).grid(row=42, column=0, sticky='W')
 
+# Export to OPGEE checkbox
 tk.Checkbutton(scrollable_frame, text="Export to OPGEE", font='Helvetica 14 bold', variable = OPGEE_export_entry,
             command=lambda: toggle_state(OPGEE_export_entry, opgee_export_label, min_welltime_label, min_wellprod_label, min_welltime_entry,
                                         min_wellprod_entry)).grid(row=43, column=0, sticky='W')
 
-# Input Boxes
+# Input Boxes for user data entries
 project_name_entry = tk.Entry(scrollable_frame)
 drilled_after_entry = tk.Entry(scrollable_frame)
 drilled_before_entry = tk.Entry(scrollable_frame)
 
-# Drop down menu set-up
+# Drop down menu set-up for provinces selection
 provinces_entry = StringVar(scrollable_frame)
 provinces_entry.set("AB")  # Set default value
 province_options = ["AB","BC", "SK", "AB,BC", "AB,SK", "BC,SK", "AB,BC,SK"]
 
+# Additional input boxes for user entries
 formations_entry = tk.Entry(scrollable_frame)
 horizontal_entry = tk.Entry(scrollable_frame)
 min_gor_entry = tk.Entry(scrollable_frame)
 max_gor_entry = tk.Entry(scrollable_frame)
 
+# Additional input boxes for user entries
 prod_graph_entry = tk.Entry(scrollable_frame, state=tk.DISABLED)
 prod_graph_entry2 = tk.Entry(scrollable_frame, state=tk.DISABLED)
 prod_startdate_entry = tk.Entry(scrollable_frame, state=tk.DISABLED)
 prod_enddate_entry = tk.Entry(scrollable_frame, state=tk.DISABLED)
 
+# Entries related to injection analysis options
 inject_graph_entry = tk.Entry(scrollable_frame, state=tk.DISABLED)
 inject_startdate_entry = tk.Entry(scrollable_frame, state=tk.DISABLED)
 inject_enddate_entry = tk.Entry(scrollable_frame, state=tk.DISABLED)
 # start_date_entry = tk.Entry(app)
 # end_date_entry = tk.Entry(app)
 
+# Entries related to facility data analysis options
 facility_startdate_entry = tk.Entry(scrollable_frame, state=tk.DISABLED)
 facility_enddate_entry = tk.Entry(scrollable_frame, state=tk.DISABLED)
 
+# Entries realted to OPGEE options
 min_welltime_entry = tk.Entry(scrollable_frame, state=tk.DISABLED)
 min_wellprod_entry = tk.Entry(scrollable_frame, state=tk.DISABLED)
 
+# Pre-fill some input boxes with default values
 project_name_entry.insert(0, "Test Project")
 drilled_after_entry.insert(0, "01/05/2016")
 drilled_before_entry.insert(0, "01/09/2016")
@@ -400,16 +505,18 @@ inject_startdate_entry.insert(0, "2016-01")
 inject_enddate_entry.insert(0, "2016-05")
 inject_graph_entry.insert(0, "3")
 
+# Project the input boxes within the grid layout
 project_name_entry.grid(row=3, column=1)
 drilled_after_entry.grid(row=4, column=1)
 drilled_before_entry.grid(row=5, column=1)
 
 # provinces_entry.grid(row=6, column=1)
-# Drop down menu layout
+# Drop-down menu layout for provinces selection
 dropdown_menu = tk.OptionMenu(scrollable_frame, provinces_entry, *province_options)
 dropdown_menu.config(width=16)
 dropdown_menu.grid(row=6, column=1)
 
+# Position additional input boxes within the grid layout
 formations_entry.grid(row=7, column=1)
 horizontal_entry.grid(row=8, column=1)
 min_gor_entry.grid(row=9, column=1)
@@ -432,10 +539,11 @@ facility_enddate_entry.grid(row=37, column=1)
 min_welltime_entry.grid(row= 45, column=1)
 min_wellprod_entry.grid(row=46, column=1)
 
-
+# Add buttons for searching and submitting data
 tk.Button(scrollable_frame, text='Search', command=open_formations_list).grid(row=7, column=2, padx=10)
 tk.Button(scrollable_frame, text='Submit', command=submit_data).grid(row=47, column=1, pady=4)
 
+# Add buttons to view available graphs, depending on the data selected
 prod_graph_button = tk.Button(scrollable_frame, text='Graphs Available', command=lambda: open_graph_list("graphing options/production_graph_list.txt"), state=tk.DISABLED)
 prod_graph_button.grid(row=13, column=2, padx=10)
 prod_graph_button2 = tk.Button(scrollable_frame, text='Graphs Available', command=lambda: open_graph_list("graphing options/production_graph_list2.txt"), state=tk.DISABLED)
@@ -444,4 +552,5 @@ prod_graph_button2.grid(row=17, column=2, padx=10)
 inject_graph_button = tk.Button(scrollable_frame, text='Graphs Available', command=lambda: open_graph_list("graphing options/injection_graph_list.txt"), state=tk.DISABLED)
 inject_graph_button.grid(row=20, column=2, padx=10)
 
+# Start the Tkinter "event loop" to display the GUI
 app.mainloop()
