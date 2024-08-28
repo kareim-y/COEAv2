@@ -13,7 +13,7 @@ Alex Bradley's Research Paper - http://hdl.handle.net/1880/111763
 
 COEA originally required python 2.7, it is now updated to run on Python 3 (tested on Python 3.12). The environment is best setup using a package management tool such as conda. The `coea_gui.py` is the main script to run the tool. This will run the tool's Graphical User Interface (GUI) were you can provide your inputs, then click on the _submit_ button. The tool will then call various functions from the runfiles folder, ultimately exporting results to a version of the OPGEE tool where emissions intensities can be estimated. The analysis is completed based on the selection of a set of wells. The following image shows some default parameters that can be used for testing.
 
-![Example Inputs for Search](coea_py3/images/example2.png)
+![Example Inputs for Search](COEA_py3/images/example2.png)
 
 ## Datasets
 
