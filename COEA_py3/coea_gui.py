@@ -6,6 +6,7 @@ from PIL import Image, ImageTk
 from model_inputs import ModelInputs
 import pickle
 import os
+import importlib
 
 
 def validate_date(date_text, format):
@@ -51,18 +52,18 @@ def validate_horizontal(horizontal):
     """
     return horizontal in {'True', 'False', 'Both'}
 
-def validate_gor(gor_text):
+def validate_positive_input(input_text):
     """
-    Ensures that the GOR input by user is >= to 0.
+    Ensures that integer/float inputs made by user are >= to 0.
 
     Parameters:
-        gor_text (string): string containing the user input for GOR.
+        input_text (string): string containing the user input.
 
     Returns:
         Boloean: Returns True if the data is correct otherwise returns false.
     """
     try:
-        value = float(gor_text)
+        value = float(input_text)
         return value >= 0
     except ValueError:
         return False
@@ -78,8 +79,72 @@ def validate_date_ym(date_text):
         Boolean: True or False
     """
     try:
-        datetime.strptime(date_text, '%Y-%m')
+        if date_text == '':
+            return True
+        else:
+            datetime.strptime(date_text, '%Y-%m')
         return True
+    except ValueError:
+        return False
+
+def validate_facility_date(date_text):
+    """
+    Ensures that dates are entered in the correct format (yyyy-mm) and within a specific range (2014-01 to 2019-12).
+
+    Parameters:
+        date_text (string): string containing the date inputted by the user.
+
+    Returns:
+        Boolean: True if the date is in the correct format and within the range, otherwise False.
+    """
+    try:
+        if date_text == '':
+            return True
+        else:
+            date = datetime.strptime(date_text, '%Y-%m')
+            # Define the range
+            start_date = datetime.strptime('2014-01', '%Y-%m')
+            end_date = datetime.strptime('2019-12', '%Y-%m')
+            # Check if the date is within the specified range
+            return start_date <= date <= end_date
+    except ValueError:
+        return False
+
+def validate_number_in_range(number, range_tuple):
+    """
+    Checks if a given number is within a specified range.
+
+    Parameters:
+        number (float or int): The number to check.
+        range_tuple (tuple): A tuple containing two numbers (start, end) defining the range.
+
+    Returns:
+        Boolean: True if the number is within the range, otherwise False.
+    """
+    # Check if input was left blank
+    if number == '':
+        return True
+    else:
+        # Convert inputs to floats to ensure they are numeric
+        number = float(number)
+        start = float(range_tuple[0])
+        end = float(range_tuple[1])
+        return start <= number <= end
+
+
+def validate_oil_production(input_text):
+    """
+    Ensures that integer/float inputs made by user are >= to 0.0001.
+
+    Parameters:
+        input_text (string): string containing the user input.
+
+    Returns:
+        Boloean: Returns True if the data is correct otherwise returns false.
+    """
+    try:
+        value = float(input_text)
+        return value >= 0.0001
     except ValueError:
         return False
     
@@ -128,6 +193,28 @@ def toggle_state(checkbox_var, *items):
     for item in items:
         item.config(state=state)
 
+# Function to check if required libraries are installed
+def check_libraries():
+    required_libraries = [
+        'numpy', 'pandas', 'matplotlib', 'scipy', 'openpyxl', 'PIL', 'tkinter', 
+        'subprocess', 'datetime', 'pickle', 'chardet', 'shapely'
+    ]  # Add or remove libraries as needed
+    missing_libraries = []
+
+    # Check each library if it can be imported
+    for lib in required_libraries:
+        try:
+            importlib.import_module(lib)
+        except ImportError:
+            missing_libraries.append(lib)
+    
+    # Display the result to the user
+    if missing_libraries:
+        message = f"The following libraries are missing:\n\n{', '.join(missing_libraries)}\n\nPlease install them using pip or conda."
+        messagebox.showerror("Missing Libraries", message)
+    else:
+        messagebox.showinfo("Library Check", "All required libraries are installed.")
+
 def submit_data():
     # global inputs_instance  # Refer to the module-level variable
     # Check for main variable states
@@ -154,6 +241,7 @@ def submit_data():
     water_plot = water_plot_entry.get()
     facility_data_checkbox = facility_data_checkbox_entry.get()
     facility_gas_prod = facility_gas_prod_entry.get()
+    # facility_print_all = facility_print_all_entry.get()
     facility_print_AB = facility_print_AB_entry.get()
     facility_print_BC = facility_print_BC_entry.get()
     OPGEE_distribution_checkbox = OPGEE_dsitribution_entry.get()
@@ -188,18 +276,45 @@ def submit_data():
     if not validate_horizontal(horizontal):
         messagebox.showerror("Input Error", 'Horizontal Well must be "True", "False", or "Both".')
         return
-    if not validate_gor(min_gor):
+    if not validate_positive_input(min_gor):
         messagebox.showerror("Input Error", "Minimum First 12 month Ave GOR must be a non-negative number.")
         return
-    if not validate_gor(max_gor):
+    if not validate_positive_input(max_gor):
         messagebox.showerror("Input Error", "Maximum First 12 month Ave GOR must be a non-negative number.")
         return
-    # if not validate_date_ym(start_date):
-    #     messagebox.showerror("Input Error", "Start Date is not in the correct format (YYYY-MM).")
-    #     return
-    # if not validate_date_ym(end_date):
-    #     messagebox.showerror("Input Error", "End Date is not in the correct format (YYYY-MM).")
-    #     return
+    if not validate_number_in_range(prod_graph, (5,42)):
+        messagebox.showerror("Input Error", "There is only 42 graphing options in \"First Year Production Trend Analysis\". Please ensure you enter a number between 1-42." )
+        return
+    if not validate_date_ym(prod_startdate):
+        messagebox.showerror("Input Error", "Production start date is not in the correct format (YYYY-MM).")
+        return
+    if not validate_date_ym(prod_enddate):
+        messagebox.showerror("Input Error", "Production end date is not in the correct format (YYYY-MM).")
+        return
+    if not validate_number_in_range(prod_graph2, (5,42)):
+        messagebox.showerror("Input Error", "There is only 42 graphing options in \"Choose graphs to display from production analysis\". Please ensure you enter a number between 1-42." )
+        return
+    if not validate_number_in_range(inject_graph, (5,52)):
+        messagebox.showerror("Input Error", "There is only 52 graphing options in \"Choose graphs to display from injection analysis\". Please ensure you enter a number between 1-52." )
+        return
+    if not validate_date_ym(inject_startdate):
+        messagebox.showerror("Input Error", "Injection start date is not in the correct format (YYYY-MM).")
+        return
+    if not validate_date_ym(inject_enddate):
+        messagebox.showerror("Input Error", "Injection end date is not in the correct format (YYYY-MM).")
+        return
+    if not validate_facility_date(facility_startdate):
+        messagebox.showerror("Input Error", "Facility start date has to be in the correct format (YYYY-MM) AND between 2014-01 and 2019-12")
+        return
+    if not validate_facility_date(facility_enddate):
+        messagebox.showerror("Input Error", "Facility end date has to be in the correct format (YYYY-MM) AND between 2014-01 and 2019-12")
+        return
+    if not validate_positive_input(min_welltime):
+        messagebox.showerror("Input Error", "\"Minimum well producing time (years)\" has to be a non-negative number")
+        return
+    if not validate_oil_production(min_wellprod):
+        messagebox.showerror("Input Error", "\"Minimum oil production (bbl/day)\" has to be a positive number greater than 0.0001")
+        return
 
     # Create an instance of ModelInputs and store the data (refer to comments in model_inputs.py)
     inputs_instance = ModelInputs(
@@ -230,6 +345,7 @@ def submit_data():
         facility_startdate = facility_startdate,
         facility_enddate = facility_enddate,
         facility_gas_prod = facility_gas_prod,
+        # facility_print_all = facility_print_all,
         facility_print_AB = facility_print_AB,
         facility_print_BC = facility_print_BC,
 
@@ -259,14 +375,36 @@ def submit_data():
         file.write(project_name)
         file.truncate()
 
-    # Run COEA main file
-    subprocess.run(["python", "Canadian_Oilfield_Environmental_Assessor.py"])
-    messagebox.showinfo("Status Update", "COEA Run Complete") # Displays a pop-up when COEA is run successfully
+    # Run COEA main file with error handling
+    try:
+        # Attempt to run the first subprocess with error checking
+        subprocess.run(["python", "Canadian_Oilfield_Environmental_Assessor.py"], check=True)
+        # Display success message if the first subprocess completes without errors
+        messagebox.showinfo("Status Update", "COEA Run Complete")
+        
+        # Only run the second subprocess if the first was successful
+        script_dir = os.path.dirname(os.path.dirname(__file__))  # Go up one directory level
+        script_path = os.path.join(script_dir, 'COEAtoOPGEE.py')  # Get relative directory for COEAtoOPGEE.py
+        
+        try:
+            # Attempt to run the second subprocess with error checking
+            subprocess.run(['python', script_path], check=True)
+            # Display success message if the second subprocess completes without errors
+            messagebox.showinfo("Status Update", "COEA Data Prepared for OPGEEv4 Run")
+        except subprocess.CalledProcessError as e:
+            # Display error message if the second subprocess fails
+            messagebox.showerror("Run Error", f"COEAtoOPGEE Run Failed: {e}\n\n Check terminal for error details")
+        except Exception as e:
+            # Display a generic error message for any other exceptions
+            messagebox.showerror("Run Error", f"An unexpected error occurred during COEAtoOPGEE: {e}\n\n Check terminal for error details")
 
-    script_dir = os.path.dirname(os.path.dirname(__file__))  # Go up one directory level
-    script_path = os.path.join(script_dir, 'COEAtoOPGEE.py') # Get relative directory for COEAtoOPGEE.py (script used to prepare COEA data for OPGEE python)
-    subprocess.run(['python', script_path])
-    messagebox.showinfo("Status Update", "COEA Data Prepared for OPGEEv4 Run") # Dsiplays a pop-up when COEAtoOPGEE.py is ran successfully
+    except subprocess.CalledProcessError as e:
+        # Display error message if the first subprocess fails
+        messagebox.showerror("Run Error", f"COEA Run Failed: {e}\n\n Check terminal for error details")
+    except Exception as e:
+        # Display a generic error message for any other exceptions in the first subprocess
+        messagebox.showerror("Run Error", f"An unexpected error occurred: {e}\n\n Check terminal for error details")
+
     
 # Initialize the main application window
 app = tk.Tk()
@@ -337,9 +475,9 @@ tk.Label(scrollable_frame, text= "______________________________________________
 tk.Label(scrollable_frame, text= "________________________________________________________________________________________________________________________________").grid(row=26, columnspan=3, sticky='w')
 tk.Label(scrollable_frame, text= "________________________________________________________________________________________________________________________________").grid(row=30, columnspan=3, sticky='w')
 tk.Label(scrollable_frame, text= "________________________________________________________________________________________________________________________________").grid(row=33, columnspan=3, sticky='w')
-tk.Label(scrollable_frame, text= "________________________________________________________________________________________________________________________________").grid(row=41, columnspan=3, sticky='w')
+tk.Label(scrollable_frame, text= "________________________________________________________________________________________________________________________________").grid(row=42, columnspan=3, sticky='w')
 
-# Create labels for production graph analysis options
+# Create labels for production data analysis options
 prod_graph_label = tk.Label(scrollable_frame, text="Choose graphs To display from the \"First Year Production Trend Analysis\"\nTo view available graphs click \"Graphs Available\" button to the right", state=tk.DISABLED, justify='left')
 prod_graph_label.grid(row=13, sticky='w')
 prod_assess_label = tk.Label(scrollable_frame, text="The available data set contains monthly production data for wells between Jan-2005 and Dec-2019\nFor OPGEE field assessment, adjust start date to be first drill year", state=tk.DISABLED, justify='left')
@@ -369,11 +507,11 @@ facility_enddate_label.grid(row=37, sticky='w')
 
 # Create labels for OPGEE export options
 opgee_export_label = tk.Label(scrollable_frame, text="NOTE: Exclude wells to reduce/remove calculation issues in OPGEE\nOil production must be greater than 0 bbl/day for OPGEE to run", state=tk.DISABLED, justify='left')
-opgee_export_label.grid(row=44, sticky='w')
+opgee_export_label.grid(row=45, sticky='w')
 min_welltime_label = tk.Label(scrollable_frame, text="Minimum well producing time (years)", state=tk.DISABLED, justify='left')
-min_welltime_label.grid(row=45, sticky='w')
+min_welltime_label.grid(row=46, sticky='w')
 min_wellprod_label = tk.Label(scrollable_frame, text="Minimum oil production (bbl/day)", state=tk.DISABLED, justify='left')
-min_wellprod_label.grid(row=46, sticky='w')
+min_wellprod_label.grid(row=47, sticky='w')
 
 # tk.Label(app, text="Enter the Start Date (YYYY-MM):").grid(row=8)
 # tk.Label(app, text="Enter the End Date (YYYY-MM):").grid(row=9)
@@ -394,6 +532,7 @@ water_plot_entry = tk.BooleanVar()
 
 facility_data_checkbox_entry = tk.BooleanVar()
 facility_gas_prod_entry = tk.BooleanVar()
+# facility_print_all_entry = tk.BooleanVar()
 facility_print_AB_entry = tk.BooleanVar()
 facility_print_BC_entry = tk.BooleanVar()
 
@@ -435,21 +574,24 @@ water_plot_checkbox.grid(row=32, column=0, sticky='W')
 # Facility Data checkbox
 tk.Checkbutton(scrollable_frame, text="Facility Data", font='Helvetica 14 bold', variable = facility_data_checkbox_entry,
             command=lambda: toggle_state(facility_data_checkbox_entry, facility_info_label, facility_startdate_label, facility_enddate_label, 
-                                        facility_startdate_entry, facility_enddate_entry, facility_gas_prod_checkbox, facility_print_AB_checkbox, facility_print_BC_checkbox,)).grid(row=34, column=0, sticky='W')
+                                        facility_startdate_entry, facility_enddate_entry, facility_gas_prod_checkbox, facility_print_AB_checkbox, facility_print_BC_checkbox,
+                                        )).grid(row=34, column=0, sticky='W')
 facility_gas_prod_checkbox = tk.Checkbutton(scrollable_frame, text="Would you like to include Gas Processing Plants", variable = facility_gas_prod_entry, state=tk.DISABLED)
 facility_gas_prod_checkbox.grid(row=38, column=0, sticky='W')
-facility_print_AB_checkbox = tk.Checkbutton(scrollable_frame, text="Would you like a print out of each AB facility", variable = facility_print_AB_entry, state=tk.DISABLED)
+facility_print_AB_checkbox = tk.Checkbutton(scrollable_frame, text= "Would you like to print out each AB facility, if applicable", variable = facility_print_AB_entry, state=tk.DISABLED)
 facility_print_AB_checkbox.grid(row=39, column=0, sticky='W')
-facility_print_BC_checkbox = tk.Checkbutton(scrollable_frame, text="Would you like to print each single BC facility", variable = facility_print_BC_entry, state=tk.DISABLED)
+facility_print_BC_checkbox = tk.Checkbutton(scrollable_frame, text= "Would you like to print each BC facility, if applicable", variable = facility_print_BC_entry, state=tk.DISABLED)
 facility_print_BC_checkbox.grid(row=40, column=0, sticky='W')
+# facility_print_all_checkbox = tk.Checkbutton(scrollable_frame, text = "Would you like to print out ALL facilities, if applicable", variable = facility_print_all_entry, state=tk.DISABLED)
+# facility_print_all_checkbox.grid(row=41, column=0, sticky='W')
 
 # OPGEE Distribution Parameters checkbox
-tk.Checkbutton(scrollable_frame, text="Plot OPGEE Distribution Parameters", font='Helvetica 14 bold', variable = OPGEE_dsitribution_entry,).grid(row=42, column=0, sticky='W')
+tk.Checkbutton(scrollable_frame, text="Plot OPGEE Distribution Parameters", font='Helvetica 14 bold', variable = OPGEE_dsitribution_entry,).grid(row=43, column=0, sticky='W')
 
 # Export to OPGEE checkbox
 tk.Checkbutton(scrollable_frame, text="Export to OPGEE", font='Helvetica 14 bold', variable = OPGEE_export_entry,
             command=lambda: toggle_state(OPGEE_export_entry, opgee_export_label, min_welltime_label, min_wellprod_label, min_welltime_entry,
-                                        min_wellprod_entry)).grid(row=43, column=0, sticky='W')
+                                        min_wellprod_entry)).grid(row=44, column=0, sticky='W')
 
 # Input Boxes for user data entries
 project_name_entry = tk.Entry(scrollable_frame)
@@ -536,12 +678,11 @@ inject_enddate_entry.grid(row=22, column=1)
 facility_startdate_entry.grid(row= 36, column=1)
 facility_enddate_entry.grid(row=37, column=1)
 
-min_welltime_entry.grid(row= 45, column=1)
-min_wellprod_entry.grid(row=46, column=1)
+min_welltime_entry.grid(row= 46, column=1)
+min_wellprod_entry.grid(row=47, column=1)
 
-# Add buttons for searching and submitting data
+# Add buttons for searching for available formations
 tk.Button(scrollable_frame, text='Search', command=open_formations_list).grid(row=7, column=2, padx=10)
-tk.Button(scrollable_frame, text='Submit', command=submit_data).grid(row=47, column=1, pady=4)
 
 # Add buttons to view available graphs, depending on the data selected
 prod_graph_button = tk.Button(scrollable_frame, text='Graphs Available', command=lambda: open_graph_list("graphing options/production_graph_list.txt"), state=tk.DISABLED)
@@ -551,6 +692,12 @@ prod_graph_button2.grid(row=17, column=2, padx=10)
 
 inject_graph_button = tk.Button(scrollable_frame, text='Graphs Available', command=lambda: open_graph_list("graphing options/injection_graph_list.txt"), state=tk.DISABLED)
 inject_graph_button.grid(row=20, column=2, padx=10)
+
+# Add button for checking if required libraries are installed
+check_libraries_button = tk.Button(scrollable_frame, text="Check Installation of Required Libraries", command=check_libraries)
+check_libraries_button.grid(row=48, column=2, pady=4)
+# Add button for submitting inputs into COEA tool
+tk.Button(scrollable_frame, text='Submit', command=submit_data).grid(row=48, column=1, pady=4)
 
 # Start the Tkinter "event loop" to display the GUI
 app.mainloop()

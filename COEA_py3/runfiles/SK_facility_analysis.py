@@ -7,6 +7,8 @@ import numpy as np
 from datetime import datetime, timedelta
 
 from .map_to_drive import map_to_drive #path to Project Data folder
+from model_inputs import ModelInputs
+import pickle
 
 def get_SK_facility_links(date_array):
 
@@ -498,6 +500,10 @@ def single_facility_OPGEE(well_data, well_data_headings, SK_facility_data, OPGEE
 
 def SK_facility_analysis(well_data, well_data_headings, OPGEE_data, date_array):
 
+	# Import model inputs from .pkl file
+	with open('model_input_instance.pkl', 'rb') as f:
+		inputs_instance = pickle.load(f)
+
 	print('\n\n======================= \nSK FACILITY ANALYSIS\n=======================\n ')
 
 	well_to_facility, facility_to_well, facility_connection_dates = get_SK_facility_links(date_array)
@@ -527,13 +533,16 @@ def SK_facility_analysis(well_data, well_data_headings, OPGEE_data, date_array):
 	if connected_facilities != -1:
 		OPGEE_data = single_facility_OPGEE(well_data, well_data_headings, SK_facility_data, OPGEE_data, facility_to_well, SK_facility_info, SK_facility_info_headings,facility_connection_dates)
 
-	ask_for_single_print = str(input('\nPrint Individual Facility? (Y/N):  '))
+	# Kareem Edits
+	# ask_for_single_print = str(input('\nPrint Individual Facility? (Y/N):  '))
+	# ask_for_single_print = str(inputs_instance.facility_print_all)
+	# print("Chosen option for \"Print Individual Facility? (True/False):\"", ask_for_single_print)
 
-	if ask_for_single_print.upper() == 'Y':
+	# if inputs_instance.facility_print_all == True:
 
-		for facility in SK_facility_data:
+	# 	for facility in SK_facility_data:
 
-			print_SK_facility_data(facility,SK_facility_data, SK_facility_info, SK_facility_info_headings, facility_to_well, well_data)
+	# 		print_SK_facility_data(facility,SK_facility_data, SK_facility_info, SK_facility_info_headings, facility_to_well, well_data)
 
 	#for well in OPGEE_data:
 	#	print(well, OPGEE_data[well][OPGEE_data['headings'].index('Facility flared gas')],OPGEE_data[well][OPGEE_data['headings'].index('Facility vented gas')], OPGEE_data[well][OPGEE_data['headings'].index('Facility fuel gas')])								
