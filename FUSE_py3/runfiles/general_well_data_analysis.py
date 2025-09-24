@@ -108,7 +108,7 @@ def general_well_data_analysis(header_data, well_data, OPGEE_data, field_name):
 			# GOR = 'NA'
 			# FUSE edits
 			try:
-				if float(well_data[well][first_GAS_index]) > 0: # Checks if well is Gas producing, if so, assigns it a high GOR
+				if float(well_data[well][first_GAS_index]) > 0: # Checks if well is only gas producing, if so, assigns it a high GOR
 					GOR = 1000000000000
 			except:
 				GOR = "NA"

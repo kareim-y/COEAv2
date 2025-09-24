@@ -53,7 +53,6 @@ def apply_conversions(field_updates, mappings):
             value = field_updates[key]
             if key in ['ecosystem_richness', 'field_development_intensity']:
                 # value = [i for i, val in enumerate(value, 1) if val == '1']
-
                 # Enumerate the list to find which value is set to 1
                 value_enumerated =  enumerate(value, 1)
                 
@@ -96,13 +95,14 @@ def create_field_element(field_name, field_updates):
                 # try to parse it as a float
                 gor_val = float(value)
             except ValueError:
-                gor_val = 0.0                         # Non-numeric fall-back
+                gor_val = 0.0                        # Non-numeric fall-back
+
             if gor_val in (0.0, 0, 0.00):            # If it's exactly zero
-                value = '0.00001'                     # Enforce a small minimum value
+                value = '0.00001'                    # Enforce a small minimum value
 
         if key in ['fraction_diluent', 'heater_treater']:
             # Handle special case for fraction_diluent and heater_treater
-            process_class = 'HeavyOilDilution' if key == 'fraction_diluent' else 'CrudeOilDewatering' # A conditional expression to choose between the two special cases
+            process_class = 'HeavyOilDilution' if key == 'fraction_diluent' else 'CrudeOilDewatering' # A conditional expression to choose between HeavyOilDilution or CrudeOilDewatering
             ET.SubElement(new_field, 'Process', {'class': process_class, 'enabled' : 'false'})        # Create a sub element titled 'Process', used to temporarily disable the process to avoid dublicate error in OPGEEv4 
             process_element = ET.SubElement(new_field, 'Process', {'class': process_class})           # Create a sub element titled 'Process'
             a_element = ET.SubElement(process_element, 'A', {'name': key})                            # Print variable nad value to the 'Process' sub element
@@ -147,13 +147,13 @@ def export_name_api(root, csv_path):
         if name_elem is not None and api_elem is not None:
             names.append(name_elem.text)
             apis.append(api_elem.text)
-            print(f"{field.get('name')} ready for exporting")
+            # print(f"{field.get('name')} ready for exporting")
 
     # Build a DataFrame with two rows and write it out horizontally
     df = pd.DataFrame([names, apis], index=['name', 'API'])
     df.to_csv(csv_path, header=False)
 
-    print(f"Exported {len(names)} field names and API {len(apis)} to {csv_path}")
+    print(f"Exported {len(names)} field names and {len(apis)} APIs to {csv_path}")
 
 def main():
 
@@ -191,7 +191,7 @@ def main():
         'field_development_intensity', 'frac_transport_tanker', 'frac_transport_barge',
         'frac_transport_pipeline', 'frac_transport_rail', 'frac_transport_truck',
         'transport_dist_tanker', 'transport_dist_barge', 'transport_dist_pipeline', 'transport_dist_rail',
-        'transport_dist_truck', 'ocean_tanker_size', 'small_sources_emissions'
+        'transport_dist_truck', 'ocean_tanker_size', 'small_sources_emissions', 'common_gas_process_choice', 'oil_processing_path'
     ]
     # print(len(parameters))
 
@@ -207,7 +207,9 @@ def main():
         'upgrader_type': {0: 'None', 1: 'Delayed Coking', 2: 'Hydroconvention', 3: 'Combined Hydroconversion and Fluid Coking'},
         'gas_processing_path': {1: 'None', 2: 'Minimal', 3: 'Acid Gas', 4: 'Wet Gas', 5: 'Acid Wet Gas', 6: 'Sour Gas Reinjection', 7: 'CO2-EOR Membrane', 8: 'CO2-EOR Ryan Holmes'},
         'ecosystem_richness': {1: 'Low carbon', 2: 'Med carbon', 3: 'High carbon'},
-        'field_development_intensity': {1: 'Low', 2: 'Med', 3: 'High'}
+        'field_development_intensity': {1: 'Low', 2: 'Med', 3: 'High'},
+        'common_gas_process_choice': {1: 'All'},
+        'oil_processing_path': {1: 'Stabilization', 2: 'Storage', 3: 'Upgrading', 4: 'Dilution', 5: 'Dilution and Upgrading'}
     }
 
     # Read the text file containing the project name
@@ -239,19 +241,23 @@ def main():
         if pd.isna(field_name):
             i += 1
             field_name = 'Field ' + str(500 + i)
-        print(field_name)
+        # print(field_name)
 
         values = extract_field_data(df, col)
 
         # Extract lists for special cases
-        ecosystem_richness_values = values[51:54]           # Indices 91-93
-        field_development_intensity_values = values[54:57]  # Indices 95-97
+        ecosystem_richness_values = values[51:54]           # one of these 3 indices contains a number that will be mapped onto the conversion_mappings dictionary
+        field_development_intensity_values = values[54:57]  # one of these 3 indices contains a number that will be mapped onto the conversion_mappings dictionary
 
-        indexes_to_pop = [52,53,54,55]
+        indexes_to_pop = [52,53,54,55]                      # Remove 4 of the 6 indices in 51:57, leave 2 because there are 2 variables (i.e. ecosystem_richness_values and field_development_intensity_values)                        
         for index in sorted(indexes_to_pop, reverse=True):
             values.pop(index)
 
-        print(field_development_intensity_values)
+        if 'common_gas_process_choice' in parameters and 'oil_processing_path' in parameters: # additional parameters required by OPGEEv4 that was not included in the Excel version of OPGEE
+            values.extend([1,1])
+
+        print(values)
+        # print(field_development_intensity_values)
         if any(pd.notna(values)):                           # Check if there are any non-NaN values
             field_updates = {
                 parameters[i]: '' if pd.isna(values[i]) else str(values[i])
@@ -262,7 +268,7 @@ def main():
             field_updates['ecosystem_richness'] = ecosystem_richness_values
             field_updates['field_development_intensity'] = field_development_intensity_values
             
-            # Remove specified variables
+            # Remove specified variables in the list variables_to_remove, these variables do not exist in OPGEEv4 but existed in Excel version of OPGEE
             for var in variables_to_remove:
                 if var in field_updates:
                     del field_updates[var]
