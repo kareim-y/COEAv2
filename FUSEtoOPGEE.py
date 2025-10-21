@@ -253,12 +253,13 @@ def main():
         for index in sorted(indexes_to_pop, reverse=True):
             values.pop(index)
 
-        if 'common_gas_process_choice' in parameters and 'oil_processing_path' in parameters: # additional parameters required by OPGEEv4 that was not included in the Excel version of OPGEE
-            values.extend([1,1])
-
-        print(values)
         # print(field_development_intensity_values)
         if any(pd.notna(values)):                           # Check if there are any non-NaN values
+            print(values)
+            
+            if 'common_gas_process_choice' in parameters and 'oil_processing_path' in parameters: # additional parameters required by OPGEEv4 that was not included in the Excel version of OPGEE
+                values.extend([1,1])
+
             field_updates = {
                 parameters[i]: '' if pd.isna(values[i]) else str(values[i])
                 for i in range(min(len(parameters), len(values)))
