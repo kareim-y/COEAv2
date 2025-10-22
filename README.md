@@ -32,7 +32,7 @@ To ensure that FUSE connects properly with OPGEE Python, it is important that yo
 3. Once this is complete ensure that you have the following folder structure:  
    LCA/  
    └── FUSE/
-4. Using the links available in the _Datasets_ section, install the datasets and move them into the `Project Data` Folder which is located inside the `FUSE/FUSE_py3` folder.
+4. Install the datasets required from Peterenix and geoSCOUT and move them into the `Project Data` Folder which is located inside the `FUSE/FUSE_py3` folder.
 5. This should be your folder structre now:  
    LCA/  
    └── FUSE/  
@@ -61,7 +61,7 @@ Once the repository cloning is comepleted, follow the steps below:
    LCA/  
    ├── FUSE/  
    &nbsp;│ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── FUSE_py3/  
-   │ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Project Data/*dataset folders*/  
+   &nbsp;│ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Project Data/*dataset folders*/  
    └── OPGEEv4/
 7. Your OPGEE package should be ready for use now
 
@@ -70,22 +70,23 @@ Once the repository cloning is comepleted, follow the steps below:
 ### Using FUSE
 
 1. When the folder structuring and installation is compeleted, run the FUSE GUI by executing the `FUSE_gui.py` file.
-2. Provide the inputs required in by filling up textboxes and selecting/deselecting checkboxes.
-3. Once your inputs are compeleted, click on _submit_ at the bottom of the page (scrolling using your mouse does not work on the GUI, use the slide bar on the right of the screen)
+2. Provide the inputs required by filling up textboxes and selecting/deselecting checkboxes.
+3. Once your inputs are compeleted, click on _submit_ at the bottom of the page (scrolling using your mouse does not work on MacOS, use the slide bar on the right of the screen)
 4. You should be greeted with a pop-up message that shows all your inputs and once you click _ok_ the FUSE tool will start executing the required files.
 5. This pop-up will stay on your screen until the FUSE tools comepletes its run, you can track the progress of the FUSE tool by looking at the terminal.
 6. Once the FUSE run is complete, a pop-up message will alert you and then another message will alert you when the results are transferred to OPGEEv4 for further analysis.
-7. Keep an eye on terminal to make sure no errors have occured.
+7. If any errors occur during the FUSE run, you will receive a pop-up with the error message. Check terminal for more details on the error.
 
 #### Using OPGEEv4
 
 1. If FUSE functions as intended, you will only need to enter 2 terminal commands to run OPGEEv4.
 2. Navigate to the `OPGEEv4/opgee` folder using another terminal page, activate the anaconda environment you set-up earlier (by following the _OPGEEv4 Installation_ section of this document), this command should be `conda activate opgee`
 3. Then run this command `opg run -o output -a FUSE_run -m etc/fuse.xml` (This command works as of version 4.1.0 of OPGEEv4, the command in this step might change as future versions of OPGEEv4 are released, if you run into issues in this step, refer to the OPGEEv4 documentation)
-4. Keep an eye on terminal to see the progress of the OPGEEv4 run.
-5. Once the run is complete, the results will be saved in `carbon_intensity.csv` file, in the folder `OPGEEv4/opgee/output`.
-6. The `carbon_intensity.csv` file has a long-format, which might not be easy to read. Using the "OPGEE Post-Processing" section of the gui will "prettify" OPGEE outputs, and, by default, store the prettified csv in the following folder: `FUSE\FUSE_py3\OPGEE post processing`.
+4. To have faster OPGEEv4 runs use the following command, which utilizes the cluster run feature in OPGEEv4 `opg run -o output -a FUSE_run -m etc/fuse.xml -c local`. Adding `-c local` initiates a parallel computing approach that analyzes several fields at once.
+5. Keep an eye on terminal to see the progress of the OPGEEv4 run.
+6. Once the run is complete, the results will be saved in `carbon_intensity.csv` file, in the folder `OPGEEv4/opgee/output`.
+7. The `carbon_intensity.csv` file has a long-format, which might not be easy to read. Using the "OPGEE Post-Processing" section of the gui will "prettify" OPGEE outputs, and, by default, store the "prettified" CSV file in the following folder: `FUSE\FUSE_py3\OPGEE post processing`.
 
 ### Contact
 
-Reach out to kareim.youssef@ucalgary.ca or alexbradley60@gmail.com
+Reach out to kareim.youssef@ucalgary.ca
